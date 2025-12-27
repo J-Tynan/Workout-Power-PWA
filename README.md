@@ -1,4 +1,4 @@
-# [WIP] Workout Power PoWA
+# [WIP] Workout Power PWA
 
 A modern, open-source, installable Progressive Web App (PWA) revival of the famous **Scientific 7-Minute Workout** originally published by The New York Times and based on the 2013 ACSM paper.
 
@@ -45,3 +45,4 @@ TBC
 
 
 The app is pure static files — no build step required during early development.
+

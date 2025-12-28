@@ -71,8 +71,17 @@ async function loadWorkoutPreview(filename) {
             <!-- Exercise cards -->
             ${currentWorkout.exercises.map((ex, index) => `
               <div class="bg-primary/50 rounded-2xl p-6 min-w-80 max-w-sm shadow-xl">
-                <div class="bg-gray-800 rounded-xl h-64 flex items-center justify-center mb-4">
-                  <p class="text-2xl text-center px-4 text-light/70">${ex.name}</p>
+                <div class="bg-gray-800 rounded-xl h-64 flex items-center justify-center mb-4 overflow-hidden">
+                  <img src="assets/illustrations/${ex.svgFile || 'placeholder.svg'}" 
+                      alt="${ex.name}"
+                      class="w-full h-full object-contain"
+                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                      onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
+                  <!-- Fallback text -->
+                  <div class="hidden flex-col items-center justify-center text-light/70">
+                    <p class="text-4xl font-bold">${index + 1}</p>
+                    <p class="text-2xl text-center px-4 mt-2">${ex.name}</p>
+                  </div>
                 </div>
                 <h3 class="text-2xl font-bold text-center mb-2">${index + 1}. ${ex.name}</h3>
                 <p class="text-light text-center text-sm opacity-80">

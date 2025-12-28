@@ -115,102 +115,102 @@ function loadOptions() {
           ← Back
         </button>
         <h1 class="text-4xl md:text-5xl font-bold">Options ⚙️</h1>
-        <div class="w-20"></div> <!-- spacer for centering title -->
+        <div class="w-20"></div>
       </div>
 
       <div class="flex-1 overflow-y-auto space-y-10 pb-8">
-        <!-- Voice Volume Slider -->
+        <!-- Voice Volume Sliders -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Voice Volume</h2>
-          <div class="flex items-center justify-between mb-2">
-            <label class="text-lg">Guidance Voice</label>
-            <span class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">80%</span>
+          
+          <div class="mb-8">
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-lg">Guidance Voice</label>
+              <span id="voice-volume-value" class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">80%</span>
+            </div>
+            <input type="range" id="voice-volume-slider" min="0" max="100" value="80" 
+                   class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider">
           </div>
-          <input type="range" min="0" max="100" value="80" class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider" />
 
-          <div class="flex items-center justify-between mt-8 mb-2">
-            <label class="text-lg">Countdown Beeps</label>
-            <span class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">60%</span>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label class="text-lg">Countdown Beeps</label>
+              <span id="beep-volume-value" class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">60%</span>
+            </div>
+            <input type="range" id="beep-volume-slider" min="0" max="100" value="60" 
+                   class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider">
           </div>
-          <input type="range" min="0" max="100" value="60" class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider" />
         </div>
 
-        <!-- Toggles (On/Off Switches) -->
+        <!-- Toggles -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Features</h2>
           
           <label class="flex items-center justify-between mb-6 cursor-pointer">
             <span class="text-lg">Vibration on Rest/Start</span>
             <div class="relative">
-              <input type="checkbox" checked class="sr-only" />
-              <div class="w-14 h-8 bg-accent rounded-full shadow-inner"></div>
-              <div class="dot absolute w-6 h-6 bg-bg rounded-full shadow top-1 left-1 transition"></div>
+              <input type="checkbox" id="toggle-vibration" checked class="sr-only peer" />
+              <div class="w-14 h-8 bg-gray-600 peer-checked:bg-accent rounded-full shadow-inner transition"></div>
+              <div class="dot absolute w-6 h-6 bg-bg rounded-full shadow top-1 left-1 peer-checked:translate-x-6 transition"></div>
             </div>
           </label>
 
           <label class="flex items-center justify-between mb-6 cursor-pointer">
-            <span class="text-lg">Screen Wake Lock (keep screen on)</span>
+            <span class="text-lg">Screen Wake Lock</span>
             <div class="relative">
-              <input type="checkbox" checked class="sr-only" />
-              <div class="w-14 h-8 bg-accent rounded-full shadow-inner"></div>
-              <div class="dot absolute w-6 h-6 bg-bg rounded-full shadow top-1 left-1 transition"></div>
+              <input type="checkbox" id="toggle-wakelock" checked class="sr-only peer" />
+              <div class="w-14 h-8 bg-gray-600 peer-checked:bg-accent rounded-full shadow-inner transition"></div>
+              <div class="dot absolute w-6 h-6 bg-bg rounded-full shadow top-1 left-1 peer-checked:translate-x-6 transition"></div>
             </div>
           </label>
 
           <label class="flex items-center justify-between cursor-pointer">
-            <span class="text-lg">Sound Effects (beeps, chimes)</span>
+            <span class="text-lg">Sound Effects</span>
             <div class="relative">
-              <input type="checkbox" class="sr-only" />
-              <div class="w-14 h-8 bg-gray-600 rounded-full shadow-inner"></div>
-              <div class="dot absolute w-6 h-6 bg-bg rounded-full shadow top-1 left-8 transition"></div>
+              <input type="checkbox" id="toggle-sounds" class="sr-only peer" />
+              <div class="w-14 h-8 bg-gray-600 peer-checked:bg-accent rounded-full shadow-inner transition"></div>
+              <div class="dot absolute w-6 h-6 bg-bg rounded-full shadow top-1 left-1 peer-checked:translate-x-6 transition"></div>
             </div>
           </label>
         </div>
 
-        <!-- Radio Buttons: Theme Selection -->
+        <!-- Theme & Voice Style (static for now, but styled) -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Theme</h2>
-          
-          <label class="flex items-center mb-5 cursor-pointer">
-            <input type="radio" name="theme" checked class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">Dark (Default)</span>
-          </label>
-          
-          <label class="flex items-center mb-5 cursor-pointer">
-            <input type="radio" name="theme" class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">Light</span>
-          </label>
-          
-          <label class="flex items-center cursor-pointer">
-            <input type="radio" name="theme" class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">High Contrast</span>
-          </label>
+          <label class="flex items-center mb-5"><input type="radio" name="theme" checked class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Dark (Default)</span></label>
+          <label class="flex items-center mb-5"><input type="radio" name="theme" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Light</span></label>
+          <label class="flex items-center"><input type="radio" name="theme" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">High Contrast</span></label>
         </div>
 
-        <!-- Radio Buttons: Voice Style -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Voice Style</h2>
-          
-          <label class="flex items-center mb-5 cursor-pointer">
-            <input type="radio" name="voice" checked class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">Natural (Default)</span>
-          </label>
-          
-          <label class="flex items-center mb-5 cursor-pointer">
-            <input type="radio" name="voice" class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">Motivational Coach</span>
-          </label>
-          
-          <label class="flex items-center cursor-pointer">
-            <input type="radio" name="voice" class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">Calm & Gentle</span>
-          </label>
+          <label class="flex items-center mb-5"><input type="radio" name="voice" checked class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Natural (Default)</span></label>
+          <label class="flex items-center mb-5"><input type="radio" name="voice" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Motivational Coach</span></label>
+          <label class="flex items-center"><input type="radio" name="voice" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Calm & Gentle</span></label>
         </div>
       </div>
     </div>
   `;
 
   history.pushState({ view: 'options' }, '', '#options');
+
+  // === Interactive Wiring ===
+  
+  // Volume sliders - update percentage display live
+  const voiceSlider = document.getElementById('voice-volume-slider');
+  const voiceValue = document.getElementById('voice-volume-value');
+  voiceSlider.addEventListener('input', () => {
+    voiceValue.textContent = `${voiceSlider.value}%`;
+  });
+
+  const beepSlider = document.getElementById('beep-volume-slider');
+  const beepValue = document.getElementById('beep-volume-value');
+  beepSlider.addEventListener('input', () => {
+    beepValue.textContent = `${beepSlider.value}%`;
+  });
+
+  // Toggles - clicking the label toggles the checkbox (peer class handles visual)
+  // No extra JS needed beyond Tailwind's peer-checked classes!
 }
 
 // Helper to go back correctly from Options (returns to previous screen)

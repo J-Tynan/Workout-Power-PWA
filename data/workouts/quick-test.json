@@ -13,8 +13,7 @@
       "voiceCueMid": "Keep those arms and legs moving!",
       "voiceCueCountdown": "Ten seconds left",
       "voiceCueNext": "Rest. Next up: Wall sit",
-      "svgFrames": ["jumping_jacks_closed.svg", "jumping_jacks_open.svg"],
-      "animationSpeedMs": 800,
+      "svgFile": "jumping-jacks.svg",
       "formTips": "Land softly on the balls of your feet. Full arm and leg extension."
     },
     {
@@ -25,8 +24,7 @@
       "voiceCueMid": "Hold strong!",
       "voiceCueCountdown": null,
       "voiceCueNext": "Rest. Next up: Push-ups",
-      "svgFrames": ["wall_sit.svg"],
-      "animationSpeedMs": null,
+      "svgFile": "wall-sit.svg",
       "formTips": "Back flat against the wall. Knees directly over ankles."
     },
     {
@@ -37,8 +35,7 @@
       "voiceCueMid": null,
       "voiceCueCountdown": "Ten seconds left",
       "voiceCueNext": "Workout complete! Great job.",
-      "svgFrames": ["push_up_down.svg", "push_up_up.svg"],
-      "animationSpeedMs": 1000,
+      "svgFile": "push-ups.svg",
       "formTips": "Keep body straight. Lower chest close to the floor."
     }
   ]

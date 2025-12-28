@@ -13,8 +13,7 @@
       "voiceCueMid": null,
       "voiceCueCountdown": "Ten seconds left",
       "voiceCueNext": "Rest. Next up: Arm circles forward",
-      "svgFrames": ["marching_1.svg", "marching_2.svg"],
-      "animationSpeedMs": 700,
+      "svgFile": "marching.svg",
       "formTips": "Lift knees high. Pump arms naturally."
     },
     {
@@ -25,8 +24,7 @@
       "voiceCueMid": null,
       "voiceCueCountdown": null,
       "voiceCueNext": "Rest. Next up: Arm circles backward",
-      "svgFrames": ["arm_circle_forward_1.svg", "arm_circle_forward_2.svg"],
-      "animationSpeedMs": 600,
+      "svgFile": "arm-circles.svg",
       "formTips": "Big circles. Keep shoulders relaxed."
     },
     {
@@ -37,8 +35,7 @@
       "voiceCueMid": null,
       "voiceCueCountdown": null,
       "voiceCueNext": "Rest. Next up: Bodyweight squats",
-      "svgFrames": ["arm_circle_backward_1.svg", "arm_circle_backward_2.svg"],
-      "animationSpeedMs": 600,
+      "svgFile": "arm-circles.svg",
       "formTips": "Reverse direction smoothly."
     },
     {
@@ -49,8 +46,7 @@
       "voiceCueMid": null,
       "voiceCueCountdown": "Ten seconds left",
       "voiceCueNext": "Rest. Next up: High knees",
-      "svgFrames": ["squat_down.svg", "squat_up.svg"],
-      "animationSpeedMs": 1000,
+      "svgFile": "squats.svg",
       "formTips": "Knees track over toes. Chest up."
     },
     {
@@ -61,8 +57,7 @@
       "voiceCueMid": null,
       "voiceCueCountdown": "Ten seconds left",
       "voiceCueNext": "Workout complete! You're warmed up.",
-      "svgFrames": ["high_knees_1.svg", "high_knees_2.svg"],
-      "animationSpeedMs": 500,
+      "svgFile": "high-knees.svg",
       "formTips": "Drive knees up. Quick feet."
     }
   ]

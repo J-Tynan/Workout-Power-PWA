@@ -114,12 +114,51 @@ function loadOptions() {
         <button onclick="goBackFromOptions()" class="text-light text-lg underline">
           ← Back
         </button>
-        <h1 class="text-4xl md:text-5xl font-bold">Options ⚙️</h1>
+        <h1 class="text-4xl md:text-5xl font-bold">Options</h1>
         <div class="w-20"></div>
       </div>
 
       <div class="flex-1 overflow-y-auto space-y-10 pb-8">
-        <!-- Voice Volume Sliders -->
+        <!-- Theme Selection -->
+        <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
+          <h2 class="text-2xl font-bold mb-6">Theme</h2>
+          
+          <label class="flex items-center mb-5 cursor-pointer">
+            <input type="radio" name="theme" value="system" class="mr-4 w-6 h-6 text-accent" />
+            <span class="text-lg">System (Default)</span>
+          </label>
+          
+          <label class="flex items-center mb-5 cursor-pointer">
+            <input type="radio" name="theme" value="dark" class="mr-4 w-6 h-6 text-accent" />
+            <span class="text-lg">Dark</span>
+          </label>
+          
+          <label class="flex items-center mb-5 cursor-pointer">
+            <input type="radio" name="theme" value="light" class="mr-4 w-6 h-6 text-accent" />
+            <span class="text-lg">Light</span>
+          </label>
+        </div>
+
+        <!-- Light Theme Color Picker (shown only when Light is selected) -->
+        <div id="light-theme-colors" class="bg-primary/30 rounded-3xl p-8 shadow-xl hidden">
+          <h2 class="text-2xl font-bold mb-6">Light Theme Accent Color</h2>
+          
+          <select id="light-color-preset" class="w-full p-4 rounded-xl text-bg text-lg mb-6">
+            <option value="#10B981">Green (Default)</option>
+            <option value="#3B82F6">Blue</option>
+            <option value="#8B5CF6">Purple</option>
+            <option value="#F59E0B">Orange</option>
+            <option value="custom">Custom...</option>
+          </select>
+
+          <div id="custom-color-wrapper" class="hidden justify-center mb-4">
+            <input type="color" id="custom-color-picker" class="w-32 h-32 rounded-xl cursor-pointer" />
+          </div>
+
+          <p class="text-sm opacity-80">Changes apply instantly and are saved automatically.</p>
+        </div>
+
+        <!-- Volume Sliders -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Voice Volume</h2>
           
@@ -142,7 +181,7 @@ function loadOptions() {
           </div>
         </div>
 
-        <!-- Toggles -->
+        <!-- Feature Toggles -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Features</h2>
           
@@ -173,100 +212,151 @@ function loadOptions() {
             </div>
           </label>
         </div>
-
-        <!-- Theme & Voice Style (static for now, but styled) -->
-        <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Theme</h2>
-          <label class="flex items-center mb-5"><input type="radio" name="theme" checked class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Dark (Default)</span></label>
-          <label class="flex items-center mb-5"><input type="radio" name="theme" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Light</span></label>
-          <label class="flex items-center"><input type="radio" name="theme" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">High Contrast</span></label>
-        </div>
-
-        <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Voice Style</h2>
-          <label class="flex items-center mb-5"><input type="radio" name="voice" checked class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Natural (Default)</span></label>
-          <label class="flex items-center mb-5"><input type="radio" name="voice" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Motivational Coach</span></label>
-          <label class="flex items-center"><input type="radio" name="voice" class="mr-4 w-6 h-6 text-accent"><span class="text-lg">Calm & Gentle</span></label>
-        </div>
       </div>
     </div>
   `;
 
   history.pushState({ view: 'options' }, '', '#options');
 
-  // === Interactive Wiring ===
-  
-  // === Persistence with localStorage ===
+  // === Interactive Wiring + Theme & Persistence Logic ===
 
   const SETTINGS_KEY = 'workoutPowerSettings';
+  const root = document.documentElement;
 
-  // Load saved settings on page load
+  // Default dark colors
+  const darkColors = {
+    '--bg': '#0D2818',
+    '--primary': '#1B5E20',
+    '--accent': '#4CAF50',
+    '--light': '#C8E6C9'
+  };
+
+  // Load saved settings
   const saved = localStorage.getItem(SETTINGS_KEY);
-  if (saved) {
-    const settings = JSON.parse(saved);
+  let settings = saved ? JSON.parse(saved) : { theme: 'system' };
 
-    if (settings.voiceVolume !== undefined) {
-      voiceSlider.value = settings.voiceVolume;
-      voiceValue.textContent = `${settings.voiceVolume}%`;
+  // Detect system preference
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  // Apply theme
+  function applyTheme() {
+    let theme = settings.theme || 'system';
+
+    // Resolve system preference
+    if (theme === 'system') {
+      theme = prefersDark ? 'dark' : 'light';
     }
-    if (settings.beepVolume !== undefined) {
-      beepSlider.value = settings.beepVolume;
-      beepValue.textContent = `${settings.beepVolume}%`;
-    }
-    if (settings.vibration !== undefined) {
-      document.getElementById('toggle-vibration').checked = settings.vibration;
-    }
-    if (settings.wakelock !== undefined) {
-      document.getElementById('toggle-wakelock').checked = settings.wakelock;
-    }
-    if (settings.sounds !== undefined) {
-      document.getElementById('toggle-sounds').checked = settings.sounds;
+
+    document.querySelectorAll('input[name="theme"]').forEach(r => {
+      r.checked = r.value === (settings.theme || 'system');
+    });
+
+    if (theme === 'dark') {
+      Object.entries(darkColors).forEach(([key, val]) => root.style.setProperty(key, val));
+      document.getElementById('light-theme-colors').classList.add('hidden');
+      document.documentElement.classList.remove('light-theme');
+    } else if (theme === 'light') {
+      const accentColor = settings.lightColor || '#10B981';
+      root.style.setProperty('--bg', '#F0FDF4');
+      root.style.setProperty('--primary', accentColor);
+      root.style.setProperty('--accent', accentColor);
+      root.style.setProperty('--light', '#1F2937');
+      document.getElementById('light-theme-colors').classList.remove('hidden');
+      document.documentElement.classList.add('light-theme');
+
+      // Update color controls
+      const preset = document.getElementById('light-color-preset');
+      if (['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'].includes(accentColor)) {
+        preset.value = accentColor;
+        document.getElementById('custom-color-wrapper').classList.add('hidden');
+      } else {
+        preset.value = 'custom';
+        document.getElementById('custom-color-wrapper').classList.remove('hidden');
+        document.getElementById('custom-color-picker').value = accentColor;
+      }
     }
   }
 
-  // Save settings whenever anything changes
+  applyTheme();
+
+  // Theme change
+  document.querySelectorAll('input[name="theme"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      settings.theme = radio.value;
+      saveSettings();
+      applyTheme();
+    });
+  });
+
+  // Light color preset
+  const presetSelect = document.getElementById('light-color-preset');
+  presetSelect.addEventListener('change', () => {
+    if (presetSelect.value === 'custom') {
+      document.getElementById('custom-color-wrapper').classList.remove('hidden');
+      document.getElementById('custom-color-picker').click();
+    } else {
+      settings.lightColor = presetSelect.value;
+      saveSettings();
+      applyTheme();
+    }
+  });
+
+  // Custom color picker
+  const customPicker = document.getElementById('custom-color-picker');
+  customPicker.addEventListener('input', () => {
+    settings.lightColor = customPicker.value;
+    saveSettings();
+    applyTheme();
+  });
+
+  // Volume sliders
+  const voiceSlider = document.getElementById('voice-volume-slider');
+  const voiceValue = document.getElementById('voice-volume-value');
+  const beepSlider = document.getElementById('beep-volume-slider');
+  const beepValue = document.getElementById('beep-volume-value');
+
+  voiceSlider.addEventListener('input', () => {
+    voiceValue.textContent = `${voiceSlider.value}%`;
+    saveSettings();
+  });
+
+  beepSlider.addEventListener('input', () => {
+    beepValue.textContent = `${beepSlider.value}%`;
+    saveSettings();
+  });
+
+  // Toggles
+  ['vibration', 'wakelock', 'sounds'].forEach(id => {
+    const toggle = document.getElementById(`toggle-${id}`);
+    toggle.addEventListener('change', saveSettings);
+  });
+
+  // Save function
   function saveSettings() {
-    const settings = {
+    const currentSettings = {
+      theme: settings.theme || 'system',
+      lightColor: settings.lightColor,
       voiceVolume: parseInt(voiceSlider.value),
       beepVolume: parseInt(beepSlider.value),
       vibration: document.getElementById('toggle-vibration').checked,
       wakelock: document.getElementById('toggle-wakelock').checked,
-      sounds: document.getElementById('toggle-sounds').checked,
-      // Add more later: theme, voiceStyle, etc.
+      sounds: document.getElementById('toggle-sounds').checked
     };
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(currentSettings));
+    settings = currentSettings; // update local copy
   }
 
-  // Attach save on change
-  voiceSlider.addEventListener('input', () => {
+  // Load saved non-theme settings
+  if (saved) {
+    const loaded = JSON.parse(saved);
+    voiceSlider.value = loaded.voiceVolume ?? 80;
     voiceValue.textContent = `${voiceSlider.value}%`;
-    saveSettings();
-  });
-
-  beepSlider.addEventListener('input', () => {
+    beepSlider.value = loaded.beepVolume ?? 60;
     beepValue.textContent = `${beepSlider.value}%`;
-    saveSettings();
-  });
-
-  document.getElementById('toggle-vibration').addEventListener('change', saveSettings);
-  document.getElementById('toggle-wakelock').addEventListener('change', saveSettings);
-  document.getElementById('toggle-sounds').addEventListener('change', saveSettings);
-
-  // Volume sliders - update percentage display live
-  const voiceSlider = document.getElementById('voice-volume-slider');
-  const voiceValue = document.getElementById('voice-volume-value');
-  voiceSlider.addEventListener('input', () => {
-    voiceValue.textContent = `${voiceSlider.value}%`;
-  });
-
-  const beepSlider = document.getElementById('beep-volume-slider');
-  const beepValue = document.getElementById('beep-volume-value');
-  beepSlider.addEventListener('input', () => {
-    beepValue.textContent = `${beepSlider.value}%`;
-  });
-
-  // Toggles - clicking the label toggles the checkbox (peer class handles visual)
-  // No extra JS needed beyond Tailwind's peer-checked classes!
+    document.getElementById('toggle-vibration').checked = loaded.vibration ?? true;
+    document.getElementById('toggle-wakelock').checked = loaded.wakelock ?? true;
+    document.getElementById('toggle-sounds').checked = loaded.sounds ?? false;
+  }
 }
 
 // Helper to go back correctly from Options (returns to previous screen)

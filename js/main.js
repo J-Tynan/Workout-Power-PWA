@@ -148,12 +148,7 @@ function loadOptions() {
             <option value="#3B82F6">Blue</option>
             <option value="#8B5CF6">Purple</option>
             <option value="#F59E0B">Orange</option>
-            <option value="custom">Custom...</option>
           </select>
-
-          <div id="custom-color-wrapper" class="hidden justify-center mb-4">
-            <input type="color" id="custom-color-picker" class="w-32 h-32 rounded-xl cursor-pointer" />
-          </div>
 
           <p class="text-sm opacity-80">Changes apply instantly when in Light mode and are saved automatically.</p>
         </div>

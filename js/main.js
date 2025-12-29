@@ -222,7 +222,7 @@ function loadOptions() {
             <span id="rest-duration-value" class="text-xl font-mono bg-bg px-2 py-2 rounded-lg">10s</span>
           </div>
           <input type="range" id="rest-duration-slider" min="5" max="30" step="5" value="10" 
-                 class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider" aria-label="Rest Duration">
+                 class="w-full h-3 bg-gray-700 rounded-full appearance-none cursor-pointer slider" aria-label="Rest Duration">
         </div>
 
         <!-- Volume Sliders -->
@@ -235,7 +235,7 @@ function loadOptions() {
               <span id="voice-volume-value" class="text-xl font-mono bg-bg px-2 py-2 rounded-lg">100%</span>
             </div>
             <input type="range" id="voice-volume-slider" min="0" max="100" value="100" 
-                   class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider" aria-label="Guidance Voice Volume">
+                   class="w-full h-3 bg-gray-700 rounded-full appearance-none cursor-pointer slider" aria-label="Guidance Voice Volume">
           </div>
 
           <div>
@@ -244,7 +244,7 @@ function loadOptions() {
               <span id="beep-volume-value" class="text-xl font-mono bg-bg px-2 py-2 rounded-lg">100%</span>
             </div>
             <input type="range" id="beep-volume-slider" min="0" max="100" value="100" 
-                   class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider" aria-label="Countdown Beep Volume">
+                   class="w-full h-3 bg-gray-700 rounded-full appearance-none cursor-pointer slider" aria-label="Countdown Beep Volume">
           </div>
         </div>
 

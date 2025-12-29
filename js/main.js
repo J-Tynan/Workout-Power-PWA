@@ -78,25 +78,25 @@ async function loadWorkoutPreview(filename) {
     app.innerHTML = `
       <div class="flex flex-col h-full">
         <!-- Header -->
-        <div class="p-6 bg-primary/80 flex justify-between items-center">
+        <div class="p-4 bg-primary/80 flex justify-between items-center">
           <button id="back-to-menu-btn" class="text-light underline text-lg" aria-label="Back to Menu">
             ← Back to Menu
           </button>
-          <h1 class="text-2xl md:text-3xl font-bold" id="workout-title"></h1>
+          <h1 class="text-xl md:text-3xl font-bold" id="workout-title"></h1>
           <button id="options-btn-preview" class="text-light underline text-lg" aria-label="Options">
             Options
           </button>
         </div>
-
+2
         <!-- Carousel with Rest indicators -->
-        <div class="flex-1 overflow-x-auto px-4 py-8">
+        <div class="flex-1 overflow-x-auto px-4 py-4">
           <div class="flex gap-6 pb-4" style="width: max-content;" id="carousel-list"></div>
         </div>
 
         <!-- Total Time -->
-        <div class="p-6 text-center bg-primary/60">
+        <div class="p-4 text-center bg-primary/60">
           <p class="text-xl opacity-90">Estimated total time (with rests)</p>
-          <p class="text-4xl font-mono">${totalTimeStr}</p>
+          <p class="text-3xl font-mono">${totalTimeStr}</p>
         </div>
       </div>
     `;

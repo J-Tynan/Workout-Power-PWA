@@ -185,6 +185,17 @@ function loadOptions() {
           </div>
         </div>
 
+        <!-- Rest Time Slider -->
+        <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
+          <h2 class="text-2xl font-bold mb-6">Rest Between Exercises</h2>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-lg">Rest Duration</label>
+            <span id="rest-duration-value" class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">10s</span>
+          </div>
+          <input type="range" id="rest-duration-slider" min="5" max="30" step="5" value="10" 
+                class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider">
+        </div>
+        
         <!-- Feature Toggles -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Features</h2>
@@ -350,6 +361,24 @@ function loadOptions() {
     document.getElementById('toggle-sounds').checked = loaded.sounds ?? false;
   }
 }
+
+  // Rest duration slider
+  const restSlider = document.getElementById('rest-duration-slider');
+  const restValue = document.getElementById('rest-duration-value');
+
+  restSlider.addEventListener('input', () => {
+    restValue.textContent = `${restSlider.value}s`;
+    saveSettings();
+  });
+
+  // Load saved rest duration
+  if (saved) {
+    const loaded = JSON.parse(saved);
+    if (loaded.restDuration) {
+      restSlider.value = loaded.restDuration;
+      restValue.textContent = `${loaded.restDuration}s`;
+    }
+  }
 
 // Helper to go back correctly from Options (returns to previous screen)
 function goBackFromOptions() {

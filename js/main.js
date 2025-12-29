@@ -14,8 +14,8 @@ async function loadWorkoutList() {
     const workouts = await response.json();
 
     app.innerHTML = `
-      <div class="p-8 max-w-4xl mx-auto text-center">
-        <div class="flex justify-between items-center mb-8">
+      <div class="p-6 max-w-4xl mx-auto text-center">
+        <div class="flex justify-between items-center mb-6">
           <h1 class="text-4xl md:text-6xl font-bold">Workout Power PWA</h1>
           <button id="options-btn" class="text-xl text-light underline" aria-label="Options">
             Options
@@ -89,14 +89,15 @@ async function loadWorkoutPreview(filename) {
         </div>
 
         <!-- Carousel with Rest indicators -->
-        <div class="flex-1 overflow-x-auto px-4 py-4">
-          <div class="flex gap-6 pb-4" style="width: max-content;" id="carousel-list"></div>
+        <!-- Use px-6 / pb-6 so the scroll container edges match the gap (gap-6) between cards -->
+        <div class="flex-1 overflow-x-auto px-6 py-6">
+          <div class="flex gap-6 pb-6" style="width: max-content;" id="carousel-list"></div>
         </div>
 
         <!-- Total Time -->
         <div class="p-4 text-center bg-primary/60">
           <p class="text-xl opacity-90">Estimated total time (with rests)</p>
-          <p class="text-3xl font-mono">${totalTimeStr}</p>
+          <p class="text-2xl font-mono">${totalTimeStr}</p>
         </div>
       </div>
     `;
@@ -247,6 +248,31 @@ function loadOptions() {
           </div>
         </div>
 
+        <!-- Theme Selector -->
+        <div class="bg-primary/30 rounded-3xl p-4 shadow-xl">
+          <h2 class="text-2xl font-bold mb-6">Theme</h2>
+          <div class="flex items-center justify-between mb-4">
+            <label class="text-lg" for="theme-selector">App Theme</label>
+            <select id="theme-selector" class="bg-bg text-light rounded-md px-3 py-2" aria-label="Theme selector">
+              <option value="system">System (Default)</option>
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="text-lg" for="light-color-select">Light Theme Colour</label>
+            <select id="light-color-select" class="bg-bg text-light rounded-md px-3 py-2" aria-label="Light theme colour">
+              <option value="#3B82F6">Blue</option>
+              <option value="#F43F5E">Rose</option>
+              <option value="#10B981">Emerald</option>
+              <option value="#F59E0B">Amber</option>
+              <option value="#6366F1">Indigo</option>
+              <option value="#14B8A6">Teal</option>
+            </select>
+          </div>
+        </div>
+
         <!-- Feature Toggles -->
         <div class="bg-primary/30 rounded-3xl p-4 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Features</h2>
@@ -296,6 +322,8 @@ function loadOptions() {
   const voiceValue = document.getElementById('voice-volume-value');
   const beepSlider = document.getElementById('beep-volume-slider');
   const beepValue = document.getElementById('beep-volume-value');
+  const themeSelector = document.getElementById('theme-selector');
+  const lightColorSelect = document.getElementById('light-color-select');
 
   // Load saved values
   if (saved) {
@@ -308,12 +336,18 @@ function loadOptions() {
     document.getElementById('toggle-vibration').checked = settings.vibration ?? true;
     document.getElementById('toggle-wakelock').checked = settings.wakelock ?? true;
     document.getElementById('toggle-sounds').checked = settings.sounds ?? false;
+    // Theme settings
+    if (themeSelector) themeSelector.value = settings.theme ?? 'system';
+    if (lightColorSelect) lightColorSelect.value = settings.lightColor ?? getComputedStyle(document.documentElement).getPropertyValue('--default-accent').trim();
+    // Apply the theme immediately for preview
+    applyTheme(settings.theme ?? 'system', settings.lightColor ?? null);
   } else {
     // Defaults
     voiceSlider.value = 100;
     voiceValue.textContent = '100%';
     beepSlider.value = 100;
     beepValue.textContent = '100%';
+    if (themeSelector) themeSelector.value = 'system';
   }
 
   // Live updates + save
@@ -322,6 +356,8 @@ function loadOptions() {
       restDuration: parseInt(restSlider.value),
       voiceVolume: parseInt(voiceSlider.value),
       beepVolume: parseInt(beepSlider.value),
+      theme: themeSelector ? themeSelector.value : 'system',
+      lightColor: lightColorSelect ? lightColorSelect.value : getComputedStyle(document.documentElement).getPropertyValue('--default-accent').trim(),
       vibration: document.getElementById('toggle-vibration').checked,
       wakelock: document.getElementById('toggle-wakelock').checked,
       sounds: document.getElementById('toggle-sounds').checked
@@ -341,12 +377,50 @@ function loadOptions() {
     beepValue.textContent = `${beepSlider.value}%`;
     saveSettings();
   });
+  // Theme and light colour handlers
+  if (themeSelector) {
+    themeSelector.addEventListener('change', () => {
+      const theme = themeSelector.value;
+      const lightColor = lightColorSelect ? lightColorSelect.value : null;
+      applyTheme(theme, lightColor);
+      saveSettings();
+    });
+  }
+  if (lightColorSelect) {
+    lightColorSelect.addEventListener('change', () => {
+      const theme = themeSelector ? themeSelector.value : 'system';
+      const lightColor = lightColorSelect.value;
+      // Only apply immediately when in light mode
+      if (theme === 'light') applyTheme('light', lightColor);
+      saveSettings();
+    });
+  }
   ['vibration', 'wakelock', 'sounds'].forEach(id => {
     document.getElementById(`toggle-${id}`).addEventListener('change', saveSettings);
   });
 
   // Back button event
   document.getElementById('back-btn').addEventListener('click', () => window.WorkoutApp.goBackFromOptions());
+
+  // ApplyTheme function: sets data-theme and swaps accent variable for light theme
+  function applyTheme(theme, lightColor) {
+    const root = document.documentElement;
+    if (!theme || theme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+      // when system=light, use current selection or default
+      if (!prefersDark && lightColor) root.style.setProperty('--color-accent', lightColor);
+      else root.style.setProperty('--color-accent', getComputedStyle(root).getPropertyValue('--default-accent').trim());
+    } else if (theme === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      root.style.setProperty('--color-accent', getComputedStyle(root).getPropertyValue('--default-accent').trim());
+    } else if (theme === 'light') {
+      root.setAttribute('data-theme', 'light');
+      // set accent to selected light color or default
+      const color = lightColor || (lightColorSelect ? lightColorSelect.value : getComputedStyle(root).getPropertyValue('--default-accent').trim());
+      if (color) root.style.setProperty('--color-accent', color);
+    }
+  }
 }
 
 // Placeholder timer (we'll replace this tomorrow)

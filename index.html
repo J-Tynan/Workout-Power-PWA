@@ -17,12 +17,13 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: {
-            bg: '#0D2818',        // deep green background
-            primary: '#1B5E20',   // dark green
-            accent: '#4CAF50',    // brighter green
-            light: '#C8E6C9',
-          },
+					colors: {
+						// Colors are driven by CSS variables so we can swap palettes at runtime
+						bg: 'var(--color-bg)',
+						primary: 'var(--color-primary)',
+						accent: 'var(--color-accent)',
+						light: 'var(--color-light)',
+					},
           fontFamily: {
             sans: ['system-ui', 'sans-serif'],
           },
@@ -31,9 +32,32 @@
     }
   </script>
 
+	<!-- Theme variables: default palette + dark/light overrides. JS will update --color-accent for selected light color. -->
 	<style>
-	  body { margin: 0; height: 100vh; overflow: hidden; }
-	  #app { height: 100%; }
+	:root {
+		--color-bg: #0D2818; /* deep green background */
+		--color-primary: #1B5E20; /* dark green */
+		--color-accent: #4CAF50; /* brighter green (default) */
+		--color-light: #C8E6C9;
+		--default-accent: #4CAF50;
+	}
+	/* Dark theme overrides */
+	[data-theme="dark"] {
+		--color-bg: #07140d;
+		--color-primary: #0f3d1a;
+		--color-accent: #16a34a; /* emerald-500-ish */
+		--color-light: #c7f9d0;
+	}
+	/* Light theme base — accent is overridden by user selection via JS */
+	[data-theme="light"] {
+		--color-bg: #f8fafc; /* slate-50 */
+		--color-primary: #e6f4ea; /* soft light background */
+		--color-light: #111827; /* text/dark */
+		/* --color-accent will be set dynamically to the user's selected light accent */
+	}
+
+	body { margin: 0; height: 100vh; overflow: hidden; }
+	#app { height: 100%; }
 	</style>
 	<style>
 	  /* Custom range slider thumb */

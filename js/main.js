@@ -206,7 +206,7 @@ async function loadWorkoutPreview(filename) {
 function loadOptions() {
   app.innerHTML = `
     <div class="p-4 max-w-3xl mx-auto text-center h-full flex flex-col">
-      <div class="flex justify-between items-center mb-10">
+      <div class="flex justify-between items-center mb-4">
         <button id="back-btn" class="text-light text-lg underline" aria-label="Back">
           ← Back
         </button>

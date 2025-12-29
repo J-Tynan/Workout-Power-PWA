@@ -88,9 +88,9 @@ async function loadWorkoutPreview(filename) {
               if (index < currentWorkout.exercises.length - 1 || restSeconds > 0) {
                 restCard = `
                   <div class="flex flex-col items-center justify-center min-w-48">
-                    <div class="bg-primary/40 rounded-2xl px-8 py-12 shadow-inner">
-                      <p class="text-3xl font-bold">Rest</p>
-                      <p class="text-5xl font-mono mt-2">${restSeconds}s</p>
+                    <div class="bg-primary/40 rounded-2xl px-8 py-10 shadow-inner">
+                      <p class="text-2xl font-bold">Rest</p>
+                      <p class="text-2xl font-mono mt-2">${restSeconds}s</p>
                     </div>
                   </div>
                 `;
@@ -108,7 +108,7 @@ async function loadWorkoutPreview(filename) {
                     </div>
                   </div>
                   <h3 class="text-2xl font-bold text-center mb-2">${index + 1}. ${ex.name}</h3>
-                  <p class="text-light text-center text-sm opacity-80">
+                  <p class="text-light font-mono text-center text-sm opacity-80">
                     ${ex.durationSeconds || currentWorkout.defaultWorkSeconds}s
                   </p>
                   ${ex.formTips ? `<p class="text-light/80 text-sm mt-4 italic">${ex.formTips}</p>` : ''}
@@ -122,7 +122,7 @@ async function loadWorkoutPreview(filename) {
         <!-- Total Time -->
         <div class="p-6 text-center bg-primary/60">
           <p class="text-xl opacity-90">Estimated total time (with rests)</p>
-          <p class="text-4xl font-bold">${totalTimeStr}</p>
+          <p class="text-4xl font-mono">${totalTimeStr}</p>
         </div>
       </div>
     `;

@@ -2,7 +2,7 @@
 
 const app = document.getElementById('app');
 let currentWorkout = null;
-let currentFilename = null;  // Track filename for back navigation
+let currentFilename = null;
 
 // History state management
 async function loadWorkoutList() {
@@ -45,9 +45,23 @@ async function loadWorkoutPreview(filename) {
     currentWorkout = await response.json();
     currentFilename = filename;
 
+    // Load settings for rest time
+    const saved = localStorage.getItem('workoutPowerSettings');
+    const settings = saved ? JSON.parse(saved) : {};
+    const restSeconds = settings.restDuration || 10;
+
+    // Calculate total time
+    const workTime = currentWorkout.exercises.reduce((sum, ex) => 
+      sum + (ex.durationSeconds || currentWorkout.defaultWorkSeconds), 0);
+    const restCount = currentWorkout.exercises.length; // rest after each + final rest
+    const totalSeconds = workTime + (restCount * restSeconds);
+    const totalMins = Math.floor(totalSeconds / 60);
+    const totalSecs = totalSeconds % 60;
+    const totalTimeStr = `${totalMins}:${totalSecs.toString().padStart(2, '0')}`;
+
     app.innerHTML = `
       <div class="flex flex-col h-full">
-        <!-- Header with Back and Options -->
+        <!-- Header -->
         <div class="p-6 bg-primary/80 flex justify-between items-center">
           <button onclick="loadWorkoutList()" class="text-light underline text-lg">
             ← Back to Menu
@@ -58,39 +72,57 @@ async function loadWorkoutPreview(filename) {
           </button>
         </div>
 
-        <!-- Horizontal scrolling carousel -->
+        <!-- Carousel with Rest indicators -->
         <div class="flex-1 overflow-x-auto px-4 py-8">
           <div class="flex gap-6 pb-4" style="width: max-content;">
-            <!-- Start Workout button FIRST -->
+            <!-- Start Button -->
             <div class="bg-accent rounded-2xl p-6 min-w-80 max-w-sm shadow-2xl flex items-center justify-center">
               <button onclick="startTimer()" class="text-4xl font-bold text-bg">
                 Start Workout →
               </button>
             </div>
 
-            <!-- Exercise cards -->
-            ${currentWorkout.exercises.map((ex, index) => `
-              <div class="bg-primary/50 rounded-2xl p-6 min-w-80 max-w-sm shadow-xl">
-                <div class="bg-gray-800 rounded-xl h-64 flex items-center justify-center mb-4 overflow-hidden">
-                  <img src="assets/illustrations/${ex.svgFile || 'placeholder.svg'}" 
-                      alt="${ex.name}"
-                      class="w-full h-full object-contain"
-                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-                      onload="this.style.display='block'; this.nextElementSibling.style.display='none';">
-                  <!-- Fallback text -->
-                  <div class="hidden flex-col items-center justify-center text-light/70">
-                    <p class="text-4xl font-bold">${index + 1}</p>
-                    <p class="text-2xl text-center px-4 mt-2">${ex.name}</p>
+            <!-- Exercises + Rest cards -->
+            ${currentWorkout.exercises.map((ex, index) => {
+              let restCard = '';
+              if (index < currentWorkout.exercises.length - 1 || restSeconds > 0) {
+                restCard = `
+                  <div class="flex flex-col items-center justify-center min-w-48">
+                    <div class="bg-primary/40 rounded-2xl px-8 py-12 shadow-inner">
+                      <p class="text-3xl font-bold">Rest</p>
+                      <p class="text-5xl font-mono mt-2">${restSeconds}s</p>
+                    </div>
                   </div>
+                `;
+              }
+              return `
+                <div class="bg-primary/50 rounded-2xl p-6 min-w-80 max-w-sm shadow-xl">
+                  <div class="bg-gray-800 rounded-xl h-64 flex items-center justify-center mb-4 overflow-hidden">
+                    <img src="assets/illustrations/${ex.svgFile || 'placeholder.svg'}" 
+                         alt="${ex.name}"
+                         class="w-full h-full object-contain"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="hidden flex-col items-center justify-center text-light/70">
+                      <p class="text-4xl font-bold">${index + 1}</p>
+                      <p class="text-2xl text-center px-4 mt-2">${ex.name}</p>
+                    </div>
+                  </div>
+                  <h3 class="text-2xl font-bold text-center mb-2">${index + 1}. ${ex.name}</h3>
+                  <p class="text-light text-center text-sm opacity-80">
+                    ${ex.durationSeconds || currentWorkout.defaultWorkSeconds}s
+                  </p>
+                  ${ex.formTips ? `<p class="text-light/80 text-sm mt-4 italic">${ex.formTips}</p>` : ''}
                 </div>
-                <h3 class="text-2xl font-bold text-center mb-2">${index + 1}. ${ex.name}</h3>
-                <p class="text-light text-center text-sm opacity-80">
-                  ${ex.durationSeconds || currentWorkout.defaultWorkSeconds}s
-                </p>
-                ${ex.formTips ? `<p class="text-light/80 text-sm mt-4 italic">${ex.formTips}</p>` : ''}
-              </div>
-            `).join('')}
+                ${restCard}
+              `;
+            }).join('')}
           </div>
+        </div>
+
+        <!-- Total Time -->
+        <div class="p-6 text-center bg-primary/60">
+          <p class="text-xl opacity-90">Estimated total time (with rests)</p>
+          <p class="text-4xl font-bold">${totalTimeStr}</p>
         </div>
       </div>
     `;
@@ -99,21 +131,6 @@ async function loadWorkoutPreview(filename) {
   } catch (err) {
     app.innerHTML = `<p class="text-red-400 p-8 text-center">Error loading workout: ${err.message}</p>`;
   }
-}
-
-function startTimer() {
-  app.innerHTML = `
-    <div class="flex flex-col items-center justify-center h-full p-8 text-center">
-      <h1 class="text-5xl md:text-7xl font-bold mb-8">Get Ready!</h1>
-      <p class="text-3xl mb-8">Full timer with voice cues coming in the next update!</p>
-      <button onclick="loadWorkoutPreview('${currentFilename || 'quick-test.json'}')" 
-              class="text-2xl text-light underline">
-        ← Back to ${currentWorkout?.name || 'Workout'}
-      </button>
-    </div>
-  `;
-
-  history.pushState({ view: 'timer', filename: currentFilename }, '', '#timer');
 }
 
 function loadOptions() {
@@ -128,38 +145,15 @@ function loadOptions() {
       </div>
 
       <div class="flex-1 overflow-y-auto space-y-10 pb-8">
-        <!-- Theme Selection -->
+        <!-- Rest Duration -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Theme</h2>
-          
-          <label class="flex items-center mb-5 cursor-pointer">
-            <input type="radio" name="theme" value="system" class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">System (Default)</span>
-          </label>
-          
-          <label class="flex items-center mb-5 cursor-pointer">
-            <input type="radio" name="theme" value="dark" class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">Dark</span>
-          </label>
-          
-          <label class="flex items-center mb-5 cursor-pointer">
-            <input type="radio" name="theme" value="light" class="mr-4 w-6 h-6 text-accent" />
-            <span class="text-lg">Light</span>
-          </label>
-        </div>
-
-        <!-- Light Theme Accent Color - Always Visible -->
-        <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Light Theme Accent Color</h2>
-          
-          <select id="light-color-preset" class="w-full p-4 rounded-xl text-bg text-lg mb-6">
-            <option value="#10B981">Green (Default)</option>
-            <option value="#3B82F6">Blue</option>
-            <option value="#8B5CF6">Purple</option>
-            <option value="#F59E0B">Orange</option>
-          </select>
-
-          <p class="text-sm opacity-80">Changes apply instantly when in Light mode and are saved automatically.</p>
+          <h2 class="text-2xl font-bold mb-6">Rest Between Exercises</h2>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-lg">Rest Duration</label>
+            <span id="rest-duration-value" class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">10s</span>
+          </div>
+          <input type="range" id="rest-duration-slider" min="5" max="30" step="5" value="10" 
+                 class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider">
         </div>
 
         <!-- Volume Sliders -->
@@ -185,17 +179,6 @@ function loadOptions() {
           </div>
         </div>
 
-        <!-- Rest Time Slider -->
-        <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Rest Between Exercises</h2>
-          <div class="flex items-center justify-between mb-2">
-            <label class="text-lg">Rest Duration</label>
-            <span id="rest-duration-value" class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">10s</span>
-          </div>
-          <input type="range" id="rest-duration-slider" min="5" max="30" step="5" value="10" 
-                class="w-full h-4 bg-gray-700 rounded-full appearance-none cursor-pointer slider">
-        </div>
-        
         <!-- Feature Toggles -->
         <div class="bg-primary/30 rounded-3xl p-8 shadow-xl">
           <h2 class="text-2xl font-bold mb-6">Features</h2>
@@ -233,154 +216,78 @@ function loadOptions() {
 
   history.pushState({ view: 'options' }, '', '#options');
 
-  // === Interactive Wiring + Theme & Persistence Logic ===
-
+  // === Settings Persistence & Wiring ===
   const SETTINGS_KEY = 'workoutPowerSettings';
-  const root = document.documentElement;
-
-  // Default dark colors
-  const darkColors = {
-    '--bg': '#0D2818',
-    '--primary': '#1B5E20',
-    '--accent': '#4CAF50',
-    '--light': '#C8E6C9'
-  };
-
-  // Load saved settings
   const saved = localStorage.getItem(SETTINGS_KEY);
-  let settings = saved ? JSON.parse(saved) : { theme: 'system' };
+  let settings = saved ? JSON.parse(saved) : {};
 
-  // Detect system preference
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  // Apply theme
-  function applyTheme() {
-    let effectiveTheme = settings.theme || 'system';
-    if (effectiveTheme === 'system') {
-      effectiveTheme = prefersDark ? 'dark' : 'light';
-    }
-
-    // Update radio buttons to show saved choice (not effective)
-    document.querySelectorAll('input[name="theme"]').forEach(r => {
-      r.checked = r.value === (settings.theme || 'system');
-    });
-
-    if (effectiveTheme === 'dark') {
-      Object.entries(darkColors).forEach(([key, val]) => root.style.setProperty(key, val));
-      document.documentElement.classList.remove('light-theme');
-    } else if (effectiveTheme === 'light') {
-      const accentColor = settings.lightColor || '#10B981';
-      root.style.setProperty('--bg', '#F0FDF4');
-      root.style.setProperty('--primary', accentColor);
-      root.style.setProperty('--accent', accentColor);
-      root.style.setProperty('--light', '#1F2937');
-      document.documentElement.classList.add('light-theme');
-    }
-
-    // Always update color controls to reflect saved value (no custom picker)
-    const accentColor = settings.lightColor || '#10B981';
-    const preset = document.getElementById('light-color-preset');
-    if (['#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'].includes(accentColor)) {
-      preset.value = accentColor;
-    } else {
-      // If a saved color isn't one of the presets, fall back to default preset
-      preset.value = '#10B981';
-    }
-  }
-
-  applyTheme();
-
-  // Listen for system theme changes
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-  }
-
-  // Theme radio change
-  document.querySelectorAll('input[name="theme"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      settings.theme = radio.value;
-      saveSettings();
-      applyTheme();
-    });
-  });
-
-  // Light color preset (no custom picker)
-  const presetSelect = document.getElementById('light-color-preset');
-  presetSelect.addEventListener('change', () => {
-    settings.lightColor = presetSelect.value;
-    saveSettings();
-    applyTheme();
-  });
-
-  // Volume sliders
+  // Elements
+  const restSlider = document.getElementById('rest-duration-slider');
+  const restValue = document.getElementById('rest-duration-value');
   const voiceSlider = document.getElementById('voice-volume-slider');
   const voiceValue = document.getElementById('voice-volume-value');
   const beepSlider = document.getElementById('beep-volume-slider');
   const beepValue = document.getElementById('beep-volume-value');
 
-  voiceSlider.addEventListener('input', () => {
+  // Load saved values
+  if (saved) {
+    const loaded = JSON.parse(saved);
+    restSlider.value = loaded.restDuration ?? 10;
+    restValue.textContent = `${restSlider.value}s`;
+    voiceSlider.value = loaded.voiceVolume ?? 80;
     voiceValue.textContent = `${voiceSlider.value}%`;
-    saveSettings();
-  });
-
-  beepSlider.addEventListener('input', () => {
+    beepSlider.value = loaded.beepVolume ?? 60;
     beepValue.textContent = `${beepSlider.value}%`;
-    saveSettings();
-  });
+    document.getElementById('toggle-vibration').checked = loaded.vibration ?? true;
+    document.getElementById('toggle-wakelock').checked = loaded.wakelock ?? true;
+    document.getElementById('toggle-sounds').checked = loaded.sounds ?? false;
+  }
 
-  // Toggles
-  ['vibration', 'wakelock', 'sounds'].forEach(id => {
-    const toggle = document.getElementById(`toggle-${id}`);
-    toggle.addEventListener('change', saveSettings);
-  });
-
-  // Save function
+  // Live updates + save
   function saveSettings() {
-    const currentSettings = {
-      theme: settings.theme || 'system',
-      lightColor: settings.lightColor,
+    const current = {
+      restDuration: parseInt(restSlider.value),
       voiceVolume: parseInt(voiceSlider.value),
       beepVolume: parseInt(beepSlider.value),
       vibration: document.getElementById('toggle-vibration').checked,
       wakelock: document.getElementById('toggle-wakelock').checked,
       sounds: document.getElementById('toggle-sounds').checked
     };
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(currentSettings));
-    settings = currentSettings;
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(current));
   }
-
-  // Load saved non-theme settings
-  if (saved) {
-    const loaded = JSON.parse(saved);
-    voiceSlider.value = loaded.voiceVolume ?? 100;
-    voiceValue.textContent = `${voiceSlider.value}%`;
-    beepSlider.value = loaded.beepVolume ?? 100;
-    beepValue.textContent = `${beepSlider.value}%`;
-    document.getElementById('toggle-vibration').checked = loaded.vibration ?? true;
-    document.getElementById('toggle-wakelock').checked = loaded.wakelock ?? true;
-    document.getElementById('toggle-sounds').checked = loaded.sounds ?? false;
-  }
-}
-
-  // Rest duration slider
-  const restSlider = document.getElementById('rest-duration-slider');
-  const restValue = document.getElementById('rest-duration-value');
 
   restSlider.addEventListener('input', () => {
     restValue.textContent = `${restSlider.value}s`;
     saveSettings();
   });
+  voiceSlider.addEventListener('input', () => {
+    voiceValue.textContent = `${voiceSlider.value}%`;
+    saveSettings();
+  });
+  beepSlider.addEventListener('input', () => {
+    beepValue.textContent = `${beepSlider.value}%`;
+    saveSettings();
+  });
+  ['vibration', 'wakelock', 'sounds'].forEach(id => {
+    document.getElementById(`toggle-${id}`).addEventListener('change', saveSettings);
+  });
+}
 
-  // Load saved rest duration
-  if (saved) {
-    const loaded = JSON.parse(saved);
-    if (loaded.restDuration) {
-      restSlider.value = loaded.restDuration;
-      restValue.textContent = `${loaded.restDuration}s`;
-    }
-  }
+// Placeholder timer (we'll replace this tomorrow)
+function startTimer() {
+  app.innerHTML = `
+    <div class="flex flex-col items-center justify-center h-full p-8 text-center">
+      <h1 class="text-5xl md:text-7xl font-bold mb-8">Timer Coming Tomorrow!</h1>
+      <p class="text-3xl mb-8">Full countdown, voice cues, and rest timing</p>
+      <button onclick="loadWorkoutPreview('${currentFilename || 'quick-test.json'}')" 
+              class="text-2xl text-light underline">
+        ← Back
+      </button>
+    </div>
+  `;
+}
 
-// Helper to go back correctly from Options (returns to previous screen)
+// Helper functions
 function goBackFromOptions() {
   if (currentWorkout) {
     loadWorkoutPreview(currentFilename || 'quick-test.json');
@@ -389,22 +296,15 @@ function goBackFromOptions() {
   }
 }
 
-// Handle browser back/forward buttons
 window.addEventListener('popstate', (event) => {
-  const state = event.state;
-
-  if (!state || state.view === 'menu') {
-    loadWorkoutList();
-  } else if (state.view === 'preview') {
-    loadWorkoutPreview(state.filename);
-  } else if (state.view === 'timer') {
-    startTimer();
-  } else if (state.view === 'options') {
-    loadOptions();
-  }
+  const state = event.state || { view: 'menu' };
+  if (state.view === 'menu') loadWorkoutList();
+  else if (state.view === 'preview') loadWorkoutPreview(state.filename);
+  else if (state.view === 'timer') startTimer();
+  else if (state.view === 'options') loadOptions();
 });
 
-// Global functions for onclick
+// Global exports
 window.loadWorkoutPreview = loadWorkoutPreview;
 window.startTimer = startTimer;
 window.loadOptions = loadOptions;
@@ -414,7 +314,7 @@ window.goBackFromOptions = goBackFromOptions;
 // Initial load
 loadWorkoutList();
 
-// Register service worker
+// Service worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }

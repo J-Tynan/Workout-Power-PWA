@@ -204,7 +204,7 @@ async function loadWorkoutPreview(filename) {
 
 function loadOptions() {
   app.innerHTML = `
-    <div class="p-4 max-w-3xl mx-auto text-center h-full flex flex-col">
+    <div class="p-4 max-w-4xl mx-auto text-center h-full flex flex-col">
       <div class="flex justify-between items-center mb-4">
         <button id="back-btn" class="text-light text-lg underline" aria-label="Back">
           ← Back
@@ -216,7 +216,7 @@ function loadOptions() {
       <div class="flex-1 overflow-y-auto space-y-10 pb-8">
         <!-- Rest Duration -->
         <div class="bg-primary/30 rounded-3xl p-4 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Rest Between Exercises</h2>
+          <h2 class="text-2xl font-bold mb-4">Rest Between Exercises</h2>
           <div class="flex items-center justify-between mb-2">
             <label class="text-lg" for="rest-duration-slider">Rest Duration</label>
             <span id="rest-duration-value" class="text-xl font-mono bg-bg px-4 py-2 rounded-lg">10s</span>
@@ -227,7 +227,7 @@ function loadOptions() {
 
         <!-- Volume Sliders -->
         <div class="bg-primary/30 rounded-3xl p-4 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Voice Volume</h2>
+          <h2 class="text-2xl font-bold mb-4">Volume Controls</h2>
           
           <div class="mb-8">
             <div class="flex items-center justify-between mb-2">
@@ -250,7 +250,7 @@ function loadOptions() {
 
         <!-- Theme Selector -->
         <div class="bg-primary/30 rounded-3xl p-4 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Theme</h2>
+          <h2 class="text-2xl font-bold mb-4">Theme</h2>
           <div class="flex items-center justify-between mb-4">
             <label class="text-lg" for="theme-selector">App Theme</label>
             <select id="theme-selector" class="bg-bg text-light rounded-md px-3 py-2" aria-label="Theme selector">
@@ -275,7 +275,7 @@ function loadOptions() {
 
         <!-- Feature Toggles -->
         <div class="bg-primary/30 rounded-3xl p-4 shadow-xl">
-          <h2 class="text-2xl font-bold mb-6">Features</h2>
+          <h2 class="text-2xl font-bold mb-4">Features</h2>
           
           <label class="flex items-center justify-between mb-6 cursor-pointer">
             <span class="text-lg">Vibration on Rest/Start</span>

@@ -57,8 +57,19 @@
 		/* --color-accent will be set dynamically to the user's selected light accent */
 	}
 
-	body { margin: 0; min-height: 100vh; overflow-y: auto; }
-	#app { min-height: 100%; }
+	html, body { height: 100%; }
+	body { margin: 0; overflow: hidden; }
+	/*
+	  Scroll inside #app for reliable touch scrolling in mobile/PWA.
+	  This avoids common issues where body scrolling is blocked in standalone mode.
+	*/
+	#app {
+		height: 100vh;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		overscroll-behavior-y: contain;
+		touch-action: pan-y;
+	}
 	</style>
 	<style>
 	  /* Custom range slider thumb */

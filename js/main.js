@@ -87,12 +87,12 @@ async function loadWorkoutPreview(filename) {
               let restCard = '';
               if (index < currentWorkout.exercises.length - 1 || restSeconds > 0) {
               restCard = `
-                <div class="flex flex-col items-center justify-center min-w-80">
-                  <div class="bg-primary/40 rounded-2xl px-8 py-12 shadow-inner w-full max-w-sm">
-                    <p class="text-3xl font-bold text-center">Rest</p>
-                    <p class="text-5xl font-mono mt-2 text-center">${restSeconds}s</p>
-                  </div>
+              <div class="flex flex-col items-center justify-center min-w-64">
+                <div class="bg-primary/40 rounded-2xl px-6 py-10 shadow-inner w-full max-w-xs">
+                  <p class="text-2xl font-bold text-center">Rest</p>
+                  <p class="text-4xl font-mono mt-2 text-center">${restSeconds}s</p>
                 </div>
+              </div>
               `;
               }
               return `

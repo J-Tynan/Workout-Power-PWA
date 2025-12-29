@@ -344,7 +344,13 @@ function loadOptions() {
   const defaultTheme = settings.theme ?? 'system';
   const defaultLightColor = settings.lightColor ?? '#16A34A';
   if (themeSelector) themeSelector.value = defaultTheme;
-  if (lightColorSelect) lightColorSelect.value = defaultLightColor;
+  if (lightColorSelect) {
+    lightColorSelect.value = defaultLightColor;
+    // If the value didn't match any option (browser may ignore), fall back to the first option
+    if (lightColorSelect.value !== defaultLightColor) {
+      lightColorSelect.selectedIndex = 0;
+    }
+  }
 
   // Apply the theme immediately for preview (ensure consistent behavior on first open)
   applyTheme(defaultTheme, defaultLightColor);

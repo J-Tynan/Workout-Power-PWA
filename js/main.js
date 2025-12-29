@@ -326,30 +326,28 @@ function loadOptions() {
   const themeSelector = document.getElementById('theme-selector');
   const lightColorSelect = document.getElementById('light-color-select');
 
-  // Load saved values
-  if (saved) {
-    restSlider.value = settings.restDuration ?? 10;
-    restValue.textContent = `${restSlider.value}s`;
-    voiceSlider.value = settings.voiceVolume ?? 100;
-    voiceValue.textContent = `${voiceSlider.value}%`;
-    beepSlider.value = settings.beepVolume ?? 100;
-    beepValue.textContent = `${beepSlider.value}%`;
-    document.getElementById('toggle-vibration').checked = settings.vibration ?? true;
-    document.getElementById('toggle-wakelock').checked = settings.wakelock ?? true;
-    document.getElementById('toggle-sounds').checked = settings.sounds ?? false;
-    // Theme settings
-    if (themeSelector) themeSelector.value = settings.theme ?? 'system';
-    if (lightColorSelect) lightColorSelect.value = settings.lightColor ?? '#16A34A';
-    // Apply the theme immediately for preview
-    applyTheme(settings.theme ?? 'system', settings.lightColor ?? null);
-  } else {
-    // Defaults
-    voiceSlider.value = 100;
-    voiceValue.textContent = '100%';
-    beepSlider.value = 100;
-    beepValue.textContent = '100%';
-    if (themeSelector) themeSelector.value = 'system';
-  }
+  // Load saved values (apply sensible defaults when missing)
+  restSlider.value = settings.restDuration ?? 10;
+  restValue.textContent = `${restSlider.value}s`;
+
+  voiceSlider.value = settings.voiceVolume ?? 100;
+  voiceValue.textContent = `${voiceSlider.value}%`;
+
+  beepSlider.value = settings.beepVolume ?? 100;
+  beepValue.textContent = `${beepSlider.value}%`;
+
+  document.getElementById('toggle-vibration').checked = settings.vibration ?? true;
+  document.getElementById('toggle-wakelock').checked = settings.wakelock ?? true;
+  document.getElementById('toggle-sounds').checked = settings.sounds ?? false;
+
+  // Theme select defaults
+  const defaultTheme = settings.theme ?? 'system';
+  const defaultLightColor = settings.lightColor ?? '#16A34A';
+  if (themeSelector) themeSelector.value = defaultTheme;
+  if (lightColorSelect) lightColorSelect.value = defaultLightColor;
+
+  // Apply the theme immediately for preview (ensure consistent behavior on first open)
+  applyTheme(defaultTheme, defaultLightColor);
 
   // Live updates + save
   function saveSettings() {

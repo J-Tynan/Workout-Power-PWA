@@ -128,7 +128,7 @@ async function loadWorkoutPreview(filename) {
       exDiv.className = 'bg-primary/50 rounded-2xl p-6 min-w-80 max-w-sm shadow-xl';
       // Image and fallback
       const imgWrap = document.createElement('div');
-      imgWrap.className = 'bg-gray-800 rounded-xl h-64 flex items-center justify-center mb-4 overflow-hidden';
+      imgWrap.className = 'bg-gray-800 rounded-xl h-48 flex items-center justify-center mb-4 overflow-hidden';
       const img = document.createElement('img');
       img.src = `assets/illustrations/${ex.svgFile || 'placeholder.svg'}`;
       img.alt = ex.name;

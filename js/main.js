@@ -7,14 +7,22 @@ let currentFilename = null;
 const SETTINGS_KEY = 'workoutPowerSettings';
 
 // Light palette map for selectable accents (keys are normalized lowercase)
+const LIGHT_BASE_PALETTE = {
+  // Match index.html :root defaults so "Green" in the picker matches the app's initial light look.
+  bg: '#f8fafc',      // slate-50
+  primary: '#e6f4ea', // soft light background
+  light: '#111827'    // text/dark
+};
+
+// Light palettes: keep the same non-bright background; only the accent changes.
 const LIGHT_THEME_PALETTES = {
-  '#16a34a': { accent: '#16a34a', bg: '#f0fdf4', primary: '#dcfce7', light: '#0f172a' }, // Green
-  '#3b82f6': { accent: '#2563eb', bg: '#eff6ff', primary: '#dbeafe', light: '#1e3a8a' }, // Blue
-  '#f43f5e': { accent: '#f43f5e', bg: '#fff1f2', primary: '#ffe4ec', light: '#581c2e' }, // Rose
-  '#10b981': { accent: '#059669', bg: '#ecfdf5', primary: '#d1fae5', light: '#064e3b' }, // Emerald
-  '#f59e0b': { accent: '#d97706', bg: '#fff7ed', primary: '#ffedd5', light: '#78350f' }, // Amber
-  '#6366f1': { accent: '#4c1d95', bg: '#eef2ff', primary: '#e0e7ff', light: '#312e81' }, // Indigo
-  '#14b8a6': { accent: '#0d9488', bg: '#ecfeff', primary: '#ccfbf1', light: '#0f766e' }  // Teal
+  '#16a34a': { ...LIGHT_BASE_PALETTE, accent: '#16a34a' }, // Green (matches initial)
+  '#3b82f6': { ...LIGHT_BASE_PALETTE, accent: '#2563eb' }, // Blue
+  '#f43f5e': { ...LIGHT_BASE_PALETTE, accent: '#f43f5e' }, // Rose
+  '#10b981': { ...LIGHT_BASE_PALETTE, accent: '#059669' }, // Emerald
+  '#f59e0b': { ...LIGHT_BASE_PALETTE, accent: '#d97706' }, // Amber
+  '#6366f1': { ...LIGHT_BASE_PALETTE, accent: '#4c1d95' }, // Indigo
+  '#14b8a6': { ...LIGHT_BASE_PALETTE, accent: '#0d9488' }  // Teal
 };
 const DEFAULT_DARK_PALETTE = { accent: '#16a34a', bg: '#07140d', primary: '#0f3d1a', light: '#c7f9d0' };
 const DEFAULT_LIGHT_PALETTE = LIGHT_THEME_PALETTES['#16a34a'];

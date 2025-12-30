@@ -13,7 +13,8 @@
       "voiceCueMid": "Engage your core",
       "voiceCueCountdown": null,
       "voiceCueNext": "Rest. Next up: Abdominal crunches",
-      "svgFile": "plank.svg",
+      "svgFrames": ["plank.svg"],
+      "animationSpeedMs": null,
       "formTips": "Straight line from head to heels. Don't let hips sag."
     },
     {
@@ -24,7 +25,8 @@
       "voiceCueMid": null,
       "voiceCueCountdown": "Ten seconds left",
       "voiceCueNext": "Rest. Next up: Side plank left",
-      "svgFile": "crunches.svg",
+      "svgFrames": ["crunch_down.svg", "crunch_up.svg"],
+      "animationSpeedMs": 900,
       "formTips": "Hands behind head or across chest. Lift shoulders off ground."
     },
     {
@@ -35,7 +37,8 @@
       "voiceCueMid": null,
       "voiceCueCountdown": null,
       "voiceCueNext": "Rest. Next up: Side plank right",
-      "svgFile": "side-plank.svg",
+      "svgFrames": ["side_plank.svg"],
+      "animationSpeedMs": null,
       "formTips": "Stack or stagger feet. Body in straight line."
     },
     {
@@ -46,7 +49,8 @@
       "voiceCueMid": null,
       "voiceCueCountdown": null,
       "voiceCueNext": "Workout complete! Well done.",
-      "svgFile": "side-plank.svg",
+      "svgFrames": ["side_plank.svg"],
+      "animationSpeedMs": null,
       "formTips": "Keep hips lifted. Avoid sinking."
     }
   ]

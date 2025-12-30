@@ -12,9 +12,21 @@
     "filename": "core-focus.json"
   },
   {
-    "id": "warm-up-flow",
-    "name": "Warm-Up Flow",
-    "description": "Gentle 5-exercise warm-up circuit.",
-    "filename": "warm-up-flow.json"
+    "id": "warmup",
+    "name": "Dynamic Warm-Up",
+    "description": "Gentle full-body preparation (~6 min)",
+    "filename": "warmup.json"
+  }
+  {
+    "id": "classic",
+    "name": "Classic Scientific 7-Minute Workout",
+    "description": "The original 12-exercise circuit.",
+    "filename": "classic.json"
+  },
+  {
+    "id": "advanced",
+    "name": "Advanced 7-Minute Workout",
+    "description": "More demanding variation of Classic workout with rotations.",
+    "filename": "advanced.json"
   }
 ]

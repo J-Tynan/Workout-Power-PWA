@@ -16,7 +16,7 @@
     "name": "Dynamic Warm-Up",
     "description": "Gentle full-body preparation (~6 min)",
     "filename": "warmup.json"
-  }
+  },
   {
     "id": "classic",
     "name": "Classic Scientific 7-Minute Workout",
@@ -29,4 +29,5 @@
     "description": "More demanding variation of Classic workout with rotations.",
     "filename": "advanced.json"
   }
+
 ]

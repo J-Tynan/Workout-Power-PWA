@@ -646,7 +646,7 @@ function loadOptions() {
         <div class="bg-primary/30 rounded-3xl p-4 shadow-xl text-left">
           <h2 class="text-2xl font-bold mb-4 text-center">Debug</h2>
           <button id="test-celebrations-btn" class="w-full bg-accent text-bg font-bold rounded-2xl py-3 px-4" aria-label="Test Celebrations">Test Celebrations</button>
-          <p class="text-sm text-light/80 mt-3">Cycles through celebrations for 10 seconds.</p>
+          <p id="test-celebrations-note" class="text-sm text-light/80 mt-3">Cycles through celebrations for 10 seconds.</p>
         </div>
       </div>
     </div>
@@ -763,11 +763,44 @@ function loadOptions() {
 
   // Debug: test celebrations (cycles through the celebration list)
   const testCelebrationsBtn = document.getElementById('test-celebrations-btn');
+  const testCelebrationsNote = document.getElementById('test-celebrations-note');
   if (testCelebrationsBtn) {
     testCelebrationsBtn.addEventListener('click', () => {
+      if (testCelebrationsNote) {
+        testCelebrationsNote.textContent = 'Cycles through celebrations for 10 seconds.';
+      }
+
       const settingsNow = loadSettings();
-      if (!(settingsNow.celebrations ?? true)) return;
-      startNextCelebration(testCelebrationsBtn);
+      if (!(settingsNow.celebrations ?? true)) {
+        if (testCelebrationsNote) {
+          testCelebrationsNote.textContent = 'Turn on Celebrations above to test.';
+        }
+        return;
+      }
+
+      if (prefersReducedMotion()) {
+        if (testCelebrationsNote) {
+          testCelebrationsNote.textContent = 'Disabled because Reduce Motion is enabled on this device.';
+        }
+        return;
+      }
+
+      // Some older browsers may not support the Web Animations API used by the effects.
+      const probe = document.createElement('div');
+      if (typeof probe.animate !== 'function') {
+        if (testCelebrationsNote) {
+          testCelebrationsNote.textContent = 'Not supported on this browser (no Web Animations API).';
+        }
+        return;
+      }
+
+      try {
+        startNextCelebration(testCelebrationsBtn);
+      } catch {
+        if (testCelebrationsNote) {
+          testCelebrationsNote.textContent = 'Celebrations failed to start. Check the browser console for errors.';
+        }
+      }
     });
   }
 

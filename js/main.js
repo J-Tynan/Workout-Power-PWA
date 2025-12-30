@@ -1191,27 +1191,27 @@ function spawnConfettiBurst(container, originX, originY, pieceCount = 70) {
 
     // Floaty confetti: small upward pop, then slow fall with gentle sway.
     // Constrain angles mostly upwards so it doesn't look like it's being thrown at the screen.
-    const angle = (-Math.PI / 2) + (Math.random() * 1.6 - 0.8);
-    const velocity = 120 + Math.random() * 220;
+    const angle = (-Math.PI / 2) + (Math.random() * 1.4 - 0.7);
+    const velocity = 90 + Math.random() * 160;
     const popX = Math.cos(angle) * velocity;
-    const popY = Math.sin(angle) * velocity - (140 + Math.random() * 220);
-    const driftX = (Math.random() * 2 - 1) * (180 + Math.random() * 220);
-    const fallY = 900 + Math.random() * 700;
-    const sway = (Math.random() * 2 - 1) * (32 + Math.random() * 58);
+    const popY = Math.sin(angle) * velocity - (170 + Math.random() * 260);
+    const driftX = (Math.random() * 2 - 1) * (120 + Math.random() * 220);
+    const fallY = 700 + Math.random() * 520;
+    const sway = (Math.random() * 2 - 1) * (48 + Math.random() * 64);
     const rotate = (Math.random() * 540 - 270);
-    const duration = 2600 + Math.random() * 1900;
+    const duration = 3600 + Math.random() * 2400;
 
     const anim = piece.animate(
       [
         { transform: 'translate(-50%, -50%) translate(0px, 0px) rotate(0deg)', opacity: 1 },
         { transform: `translate(-50%, -50%) translate(${popX}px, ${popY}px) rotate(${rotate * 0.35}deg)`, opacity: 1, offset: 0.22 },
-        { transform: `translate(-50%, -50%) translate(${popX + sway}px, ${popY + fallY * 0.35}px) rotate(${rotate * 0.75}deg)`, opacity: 0.95, offset: 0.55 },
-        { transform: `translate(-50%, -50%) translate(${popX - sway}px, ${popY + fallY * 0.75}px) rotate(${rotate}deg)`, opacity: 0.75, offset: 0.82 },
+        { transform: `translate(-50%, -50%) translate(${popX + sway}px, ${popY + fallY * 0.35}px) rotate(${rotate * 0.75}deg)`, opacity: 1, offset: 0.55 },
+        { transform: `translate(-50%, -50%) translate(${popX - sway}px, ${popY + fallY * 0.75}px) rotate(${rotate}deg)`, opacity: 0.9, offset: 0.82 },
         { transform: `translate(-50%, -50%) translate(${popX + driftX}px, ${popY + fallY}px) rotate(${rotate * 1.15}deg)`, opacity: 0 }
       ],
       {
         duration,
-        easing: 'cubic-bezier(0.15, 0.85, 0.2, 1)',
+        easing: 'ease-out',
         fill: 'forwards'
       }
     );

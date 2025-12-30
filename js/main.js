@@ -1191,11 +1191,16 @@ function spawnConfettiBurst(container, originX, originY, pieceCount = 70) {
 
     // Floaty confetti: small upward pop, then slow fall with gentle sway.
     // Constrain angles mostly upwards so it doesn't look like it's being thrown at the screen.
-    const angle = (-Math.PI / 2) + (Math.random() * 1.4 - 0.7);
-    const velocity = 90 + Math.random() * 160;
-    const popX = Math.cos(angle) * velocity;
+    const angle = (-Math.PI / 2) + (Math.random() * 1.7 - 0.85);
+    const velocity = 95 + Math.random() * 170;
+
+    // Add a little left/right randomness during the initial upward motion.
+    const popXBase = Math.cos(angle) * velocity;
+    const launchJitterX = (Math.random() * 2 - 1) * (28 + Math.random() * 54);
+    const popX = popXBase + launchJitterX;
+
     const popY = Math.sin(angle) * velocity - (170 + Math.random() * 260);
-    const driftX = (Math.random() * 2 - 1) * (120 + Math.random() * 220);
+    const driftX = (Math.random() * 2 - 1) * (220 + Math.random() * 340);
     const fallY = 700 + Math.random() * 520;
     const sway = (Math.random() * 2 - 1) * (48 + Math.random() * 64);
     const rotate = (Math.random() * 540 - 270);
@@ -1204,7 +1209,8 @@ function spawnConfettiBurst(container, originX, originY, pieceCount = 70) {
     const anim = piece.animate(
       [
         { transform: 'translate(-50%, -50%) translate(0px, 0px) rotate(0deg)', opacity: 1 },
-        { transform: `translate(-50%, -50%) translate(${popX}px, ${popY}px) rotate(${rotate * 0.35}deg)`, opacity: 1, offset: 0.22 },
+        { transform: `translate(-50%, -50%) translate(${popXBase}px, ${popY}px) rotate(${rotate * 0.25}deg)`, opacity: 1, offset: 0.16 },
+        { transform: `translate(-50%, -50%) translate(${popX}px, ${popY}px) rotate(${rotate * 0.35}deg)`, opacity: 1, offset: 0.28 },
         { transform: `translate(-50%, -50%) translate(${popX + sway}px, ${popY + fallY * 0.35}px) rotate(${rotate * 0.75}deg)`, opacity: 1, offset: 0.55 },
         { transform: `translate(-50%, -50%) translate(${popX - sway}px, ${popY + fallY * 0.75}px) rotate(${rotate}deg)`, opacity: 0.9, offset: 0.82 },
         { transform: `translate(-50%, -50%) translate(${popX + driftX}px, ${popY + fallY}px) rotate(${rotate * 1.15}deg)`, opacity: 0 }

@@ -1135,6 +1135,9 @@ function prefersReducedMotion() {
 let activeCelebration = null;
 let celebrationIndex = 0;
 
+// Celebration tuning (dev-friendly constants)
+const CONFETTI_BURST_INTERVAL_MS = 500;
+
 function getAnchorCenter(anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
   return {
@@ -1223,7 +1226,7 @@ function startConfettiCelebration(anchorEl, durationMs = 10000) {
     spawnConfettiBurst(container, x, y, 50 + Math.floor(Math.random() * 30));
   };
 
-  const burstId = window.setInterval(burst, 650);
+  const burstId = window.setInterval(burst, CONFETTI_BURST_INTERVAL_MS);
   burst();
 
   const stop = () => {
@@ -1302,15 +1305,24 @@ function spawnFireworkExplosion(container, x, y) {
 function launchFirework(container) {
   const startX = Math.floor(window.innerWidth * (0.12 + Math.random() * 0.76));
   const startY = window.innerHeight + 24;
-  const endX = startX + (Math.random() * 160 - 80);
-  const endY = Math.floor(window.innerHeight * (0.08 + Math.random() * 0.24));
+  const endX = startX + (Math.random() * 220 - 110);
+  const endY = Math.floor(window.innerHeight * (0.08 + Math.random() * 0.26));
+
+  // Variety: gentle arc and sometimes a small "drop" before the explosion.
+  const curveX = startX + (endX - startX) * (0.35 + Math.random() * 0.35) + (Math.random() * 160 - 80);
+  const curveY = startY + (endY - startY) * (0.5 + Math.random() * 0.2);
+  const shouldDrop = Math.random() < 0.22;
+  const dropPx = shouldDrop ? (20 + Math.random() * 90) : 0;
+  const finalX = endX;
+  const finalY = endY + dropPx;
 
   const rocket = document.createElement('div');
   rocket.style.position = 'absolute';
   rocket.style.left = `${startX}px`;
   rocket.style.top = `${startY}px`;
-  rocket.style.width = '4px';
-  rocket.style.height = '14px';
+  // Render as a "dot" that starts stretched into a line.
+  rocket.style.width = '10px';
+  rocket.style.height = '10px';
   rocket.style.borderRadius = '9999px';
   rocket.style.transform = 'translate(-50%, -50%)';
   rocket.style.background = 'white';
@@ -1320,18 +1332,22 @@ function launchFirework(container) {
   rocket.style.mixBlendMode = 'screen';
   container.appendChild(rocket);
 
-  const duration = 700 + Math.random() * 450;
+  const duration = 700 + Math.random() * 520;
   const anim = rocket.animate(
     [
-      { transform: 'translate(-50%, -50%) translate(0px, 0px) scaleY(1)', opacity: 0.9 },
-      { transform: `translate(-50%, -50%) translate(${endX - startX}px, ${endY - startY}px) scaleY(1.2)`, opacity: 1 }
+      // Start: looks like a small streak
+      { transform: 'translate(-50%, -50%) translate(0px, 0px) scaleX(0.22) scaleY(1.9)', opacity: 0.9 },
+      // Mid: arc/curve
+      { transform: `translate(-50%, -50%) translate(${curveX - startX}px, ${curveY - startY}px) scaleX(0.18) scaleY(2.0)`, opacity: 1, offset: 0.55 },
+      // Near end: becomes a bright dot right before explosion
+      { transform: `translate(-50%, -50%) translate(${finalX - startX}px, ${finalY - startY}px) scale(1.05)`, opacity: 1 }
     ],
     { duration, easing: 'cubic-bezier(0.15, 0.9, 0.2, 1)', fill: 'forwards' }
   );
 
   anim.addEventListener('finish', () => {
     rocket.remove();
-    spawnFireworkExplosion(container, endX, endY);
+    spawnFireworkExplosion(container, finalX, finalY);
   });
 }
 

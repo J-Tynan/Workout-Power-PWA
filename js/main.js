@@ -536,7 +536,7 @@ function loadOptions() {
 
       <div class="flex-1 min-h-0 overflow-y-auto space-y-6 pb-6">
         <!-- 1) Rest Between Exercises -->
-        <div class="bg-primary/50 rounded-3xl p-4 shadow-xl text-left">
+        <div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
           <h2 class="text-2xl font-bold mb-4 text-center">Rest Between Exercises</h2>
           <div class="flex items-center justify-between mb-2">
             <label class="text-lg" for="rest-duration-slider">Rest Duration</label>
@@ -556,7 +556,7 @@ function loadOptions() {
         </div>
 
         <!-- 2) Volume Controls -->
-        <div class="bg-primary/50 rounded-3xl p-4 shadow-xl text-left">
+        <div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
           <h2 class="text-2xl font-bold mb-4 text-center">Volume Controls</h2>
 
           <label class="flex items-center justify-between mb-6 cursor-pointer">
@@ -588,7 +588,7 @@ function loadOptions() {
         </div>
 
         <!-- 3) Theme -->
-        <div class="bg-primary/50 rounded-3xl p-4 shadow-xl text-left">
+        <div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
           <h2 class="text-2xl font-bold mb-4 text-center">Theme</h2>
           <div class="flex items-center justify-between mb-4">
             <label class="text-lg" for="theme-selector">Theme</label>
@@ -612,7 +612,7 @@ function loadOptions() {
         </div>
 
         <!-- 4) Features -->
-        <div class="bg-primary/50 rounded-3xl p-4 shadow-xl text-left">
+        <div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
           <h2 class="text-2xl font-bold mb-4 text-center">Features</h2>
 
           <label class="flex items-center justify-between mb-6 cursor-pointer">
@@ -644,7 +644,7 @@ function loadOptions() {
         </div>
 
         <!-- Debug -->
-        <div class="bg-primary/50 rounded-3xl p-4 shadow-xl text-left">
+        <div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
           <h2 class="text-2xl font-bold mb-4 text-center">Debug</h2>
           <button id="test-celebrations-btn" class="w-full bg-accent text-bg font-bold rounded-2xl py-3 px-4" aria-label="Test Celebrations">Test Celebrations</button>
           <p id="test-celebrations-note" class="text-sm text-light/80 mt-3">Cycles through celebrations for 10 seconds.</p>

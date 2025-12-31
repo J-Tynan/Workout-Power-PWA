@@ -23,13 +23,31 @@ let stopActiveTimer;
 
 function loadSettings() {
   const saved = localStorage.getItem(SETTINGS_KEY);
-  if (!saved) return {};
-  try {
-    const parsed = JSON.parse(saved);
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    return {};
+  let settings = {};
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === 'object') settings = parsed;
+    } catch {
+      settings = {};
+    }
   }
+
+  let changed = false;
+  if (!settings.theme) {
+    settings.theme = 'system';
+    changed = true;
+  }
+  if (!settings.lightColor) {
+    settings.lightColor = DEFAULT_LIGHT_COLOR;
+    changed = true;
+  }
+
+  if (changed) {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }
+
+  return settings;
 }
 
 function wakeLockIsSupported() {

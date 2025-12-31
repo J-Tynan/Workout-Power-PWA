@@ -9,13 +9,13 @@ const SETTINGS_KEY = 'workoutPowerSettings';
 // Light palette map for selectable accents (keys are normalized lowercase).
 // Each palette uses a tinted, non-blinding background to keep effects visible.
 const LIGHT_THEME_PALETTES = {
-  '#16a34a': { accent: '#16a34a', bg: '#eef8f1', primary: '#d7f1e0', light: '#102418' }, // Green
-  '#3b82f6': { accent: '#2563eb', bg: '#eef3ff', primary: '#d9e6ff', light: '#0f1b3a' }, // Blue
-  '#f43f5e': { accent: '#f43f5e', bg: '#fff0f3', primary: '#ffd9e2', light: '#3d0a1b' }, // Rose
-  '#10b981': { accent: '#059669', bg: '#e9f8f2', primary: '#d3f1e3', light: '#0b2b1f' }, // Emerald
-  '#f59e0b': { accent: '#d97706', bg: '#fff4e5', primary: '#ffe3c4', light: '#3a2405' }, // Amber
-  '#6366f1': { accent: '#4c1d95', bg: '#eef0ff', primary: '#dfe3ff', light: '#11153b' }, // Indigo
-  '#14b8a6': { accent: '#0d9488', bg: '#e6fafb', primary: '#d2f2f5', light: '#0a2c30' }  // Teal
+  '#16a34a': { accent: '#16a34a', bg: '#e2f2e7', primary: '#c7e3d2', light: '#102418' }, // Green
+  '#3b82f6': { accent: '#2563eb', bg: '#e3eaff', primary: '#c7d8ff', light: '#0f1b3a' }, // Blue
+  '#f43f5e': { accent: '#f43f5e', bg: '#ffe3ea', primary: '#ffc6d4', light: '#3d0a1b' }, // Rose
+  '#10b981': { accent: '#059669', bg: '#dff2e8', primary: '#c2e2d2', light: '#0b2b1f' }, // Emerald
+  '#f59e0b': { accent: '#d97706', bg: '#ffe8d2', primary: '#ffd0a6', light: '#3a2405' }, // Amber
+  '#6366f1': { accent: '#4c1d95', bg: '#e2e5ff', primary: '#cdd2ff', light: '#11153b' }, // Indigo
+  '#14b8a6': { accent: '#0d9488', bg: '#dbf2f4', primary: '#c4e5e9', light: '#0a2c30' }  // Teal
 };
 const DEFAULT_DARK_PALETTE = { accent: '#16a34a', bg: '#07140d', primary: '#0f3d1a', light: '#c7f9d0' };
 const DEFAULT_LIGHT_PALETTE = LIGHT_THEME_PALETTES['#16a34a'];
@@ -1285,9 +1285,9 @@ function spawnFireworkExplosion(container, x, y) {
     trail.style.left = `${x}px`;
     trail.style.top = `${y}px`;
     trail.style.width = '2px';
-    trail.style.height = '24px';
+    trail.style.height = '26px';
     trail.style.borderRadius = '9999px';
-    trail.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+    trail.style.transform = 'translate(-50%, -50%)';
     const hdr = Math.random() < 0.35;
     trail.style.background = hdr ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.6)';
     trail.style.filter = hdr ? 'brightness(2.4) saturate(1.8)' : 'brightness(1.5)';
@@ -1296,13 +1296,14 @@ function spawnFireworkExplosion(container, x, y) {
     container.appendChild(trail);
 
     const theta = Math.random() * Math.PI * 2;
-    const dist = 60 + Math.random() * 140;
-    const wobble = (Math.random() * 22) - 11;
-    const rotateDeg = (theta * 180) / Math.PI;
+    const dist = 72 + Math.random() * 140;
+    const wobble = (Math.random() * 18) - 9;
+    const dx = Math.cos(theta) * (dist + wobble);
+    const dy = Math.sin(theta) * (dist + wobble);
     const anim = trail.animate(
       [
-        { transform: 'translate(-50%, -50%) rotate(0deg) scaleY(1)', opacity: 1 },
-        { transform: `translate(-50%, -50%) translate(${Math.cos(theta) * (dist + wobble)}px, ${Math.sin(theta) * (dist + wobble)}px) rotate(${rotateDeg}deg) scaleY(0.8)`, opacity: hdr ? 0.18 : 0.14 }
+        { transform: 'translate(-50%, -50%) scaleY(1)', opacity: 1 },
+        { transform: `translate(-50%, -50%) translate(${dx}px, ${dy}px) scaleY(0.8)`, opacity: hdr ? 0.18 : 0.14 }
       ],
       { duration: 420 + Math.random() * 180, easing: 'ease-out', fill: 'forwards' }
     );
@@ -1378,6 +1379,56 @@ function launchFirework(container) {
   rocket.style.mixBlendMode = 'screen';
   container.appendChild(rocket);
 
+  // Leave small fiery embers along the flight path for a more persistent tail.
+  let emberIntervalId = null;
+  const spawnEmber = () => {
+    if (!rocket.isConnected) {
+      if (emberIntervalId) {
+        window.clearInterval(emberIntervalId);
+        emberIntervalId = null;
+      }
+      return;
+    }
+    const rect = rocket.getBoundingClientRect();
+    if (!rect.width && !rect.height) return;
+
+    const ember = document.createElement('div');
+    ember.style.position = 'absolute';
+    ember.style.left = `${rect.left + rect.width / 2}px`;
+    ember.style.top = `${rect.top + rect.height / 2}px`;
+    ember.style.width = `${6 + Math.random() * 6}px`;
+    ember.style.height = `${14 + Math.random() * 12}px`;
+    ember.style.borderRadius = '9999px';
+    ember.style.transform = 'translate(-50%, -50%)';
+    ember.style.background = 'radial-gradient(circle at 30% 25%, rgba(255,214,102,0.95), rgba(255,122,24,0.75) 55%, rgba(80,18,0,0))';
+    ember.style.opacity = '0.9';
+    ember.style.filter = 'blur(0.6px) brightness(1.2) saturate(1.15)';
+    ember.style.mixBlendMode = 'screen';
+    ember.style.boxShadow = '0 0 10px rgba(255,193,79,0.8), 0 0 18px rgba(255,122,24,0.6)';
+    container.appendChild(ember);
+
+    const driftX = (Math.random() * 10) - 5;
+    const fall = 26 + Math.random() * 34;
+    const emberAnim = ember.animate(
+      [
+        { transform: 'translate(-50%, -50%) scale(0.85)', opacity: 0.9 },
+        { transform: `translate(-50%, -50%) translate(${driftX}px, ${fall}px) scale(1.25)`, opacity: 0 }
+      ],
+      { duration: 520 + Math.random() * 200, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)', fill: 'forwards' }
+    );
+    emberAnim.addEventListener('finish', () => ember.remove());
+  };
+
+  const stopTrail = () => {
+    if (emberIntervalId) {
+      window.clearInterval(emberIntervalId);
+      emberIntervalId = null;
+    }
+  };
+
+  spawnEmber();
+  emberIntervalId = window.setInterval(spawnEmber, 28 + Math.random() * 18);
+
   const duration = 700 + Math.random() * 520;
   const anim = rocket.animate(
     [
@@ -1399,6 +1450,7 @@ function launchFirework(container) {
   const explodeTimerId = window.setTimeout(() => {
     if (exploded) return;
     exploded = true;
+    stopTrail();
     rocket.remove();
     spawnFireworkExplosion(container, finalX, finalY);
   }, Math.max(0, duration - explodeLeadMs));
@@ -1407,6 +1459,7 @@ function launchFirework(container) {
     window.clearTimeout(explodeTimerId);
     if (exploded) return;
     exploded = true;
+    stopTrail();
     rocket.remove();
     spawnFireworkExplosion(container, finalX, finalY);
   });

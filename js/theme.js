@@ -24,7 +24,7 @@ function isSystemDark() {
 
 function applyTheme(themeChoice = 'system', lightColor = DEFAULT_LIGHT_COLOR) {
   const theme = themeChoice || 'system';
-  const accent = lightColor || DEFAULT_LIGHT_COLOR;
+  const accent = theme === 'dark' ? DEFAULT_LIGHT_COLOR : (lightColor || DEFAULT_LIGHT_COLOR);
   const root = document.documentElement;
 
   const shouldUseDark = theme === 'dark' || (theme === 'system' && isSystemDark());

@@ -1297,20 +1297,21 @@ function spawnFireworkExplosion(container, x, y) {
     p.style.mixBlendMode = 'screen';
     container.appendChild(p);
 
-    const angle = (Math.PI * 2) * (i / particleCount) + (Math.random() * 0.25);
-    const speed = 220 + Math.random() * 520;
+    const angle = (Math.PI * 2) * (i / particleCount) + (Math.random() * 0.22);
+    const speed = 160 + Math.random() * 360; // slower start for a firework bloom
     const dx = Math.cos(angle) * speed;
     const dy = Math.sin(angle) * speed;
-    const gravity = 420 + Math.random() * 520;
-    const duration = 1400 + Math.random() * 900;
+    const gravity = 520 + Math.random() * 320; // gentle pull down to let sparks hang
+    const duration = 1700 + Math.random() * 900;
 
     const anim = p.animate(
       [
-        { transform: 'translate(-50%, -50%) translate(0px, 0px) scale(1)', opacity: 1 },
-        { transform: `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(1)`, opacity: 0.95, offset: 0.5 },
-        { transform: `translate(-50%, -50%) translate(${dx * 1.15}px, ${dy + gravity}px) scale(0.9)`, opacity: 0 }
+        { transform: 'translate(-50%, -50%) translate(0px, 0px) scale(0.75)', opacity: 1 },
+        { transform: `translate(-50%, -50%) translate(${dx}px, ${dy * 0.65}px) scale(1.05)`, opacity: 0.92, offset: 0.42 },
+        { transform: `translate(-50%, -50%) translate(${dx * 1.08}px, ${dy * 0.85}px) scale(0.98)`, opacity: 0.72, offset: 0.62 },
+        { transform: `translate(-50%, -50%) translate(${dx * 1.15}px, ${dy + gravity}px) scale(0.85)`, opacity: 0 }
       ],
-      { duration, easing: 'cubic-bezier(0.15, 0.85, 0.2, 1)', fill: 'forwards' }
+      { duration, delay: Math.random() * 120, easing: 'cubic-bezier(0.2, 0.82, 0.25, 1)', fill: 'forwards' }
     );
 
     anim.addEventListener('finish', () => p.remove());

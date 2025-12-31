@@ -6,23 +6,16 @@ let currentFilename = null;
 
 const SETTINGS_KEY = 'workoutPowerSettings';
 
-// Light palette map for selectable accents (keys are normalized lowercase)
-const LIGHT_BASE_PALETTE = {
-  // Match index.html :root defaults so "Green" in the picker matches the app's initial light look.
-  bg: '#f8fafc',      // slate-50
-  primary: '#e6f4ea', // soft light background
-  light: '#111827'    // text/dark
-};
-
-// Light palettes: keep the same non-bright background; only the accent changes.
+// Light palette map for selectable accents (keys are normalized lowercase).
+// Each palette uses a tinted, non-blinding background to keep effects visible.
 const LIGHT_THEME_PALETTES = {
-  '#16a34a': { ...LIGHT_BASE_PALETTE, accent: '#16a34a' }, // Green (matches initial)
-  '#3b82f6': { ...LIGHT_BASE_PALETTE, accent: '#2563eb' }, // Blue
-  '#f43f5e': { ...LIGHT_BASE_PALETTE, accent: '#f43f5e' }, // Rose
-  '#10b981': { ...LIGHT_BASE_PALETTE, accent: '#059669' }, // Emerald
-  '#f59e0b': { ...LIGHT_BASE_PALETTE, accent: '#d97706' }, // Amber
-  '#6366f1': { ...LIGHT_BASE_PALETTE, accent: '#4c1d95' }, // Indigo
-  '#14b8a6': { ...LIGHT_BASE_PALETTE, accent: '#0d9488' }  // Teal
+  '#16a34a': { accent: '#16a34a', bg: '#eef8f1', primary: '#d7f1e0', light: '#102418' }, // Green
+  '#3b82f6': { accent: '#2563eb', bg: '#eef3ff', primary: '#d9e6ff', light: '#0f1b3a' }, // Blue
+  '#f43f5e': { accent: '#f43f5e', bg: '#fff0f3', primary: '#ffd9e2', light: '#3d0a1b' }, // Rose
+  '#10b981': { accent: '#059669', bg: '#e9f8f2', primary: '#d3f1e3', light: '#0b2b1f' }, // Emerald
+  '#f59e0b': { accent: '#d97706', bg: '#fff4e5', primary: '#ffe3c4', light: '#3a2405' }, // Amber
+  '#6366f1': { accent: '#4c1d95', bg: '#eef0ff', primary: '#dfe3ff', light: '#11153b' }, // Indigo
+  '#14b8a6': { accent: '#0d9488', bg: '#e6fafb', primary: '#d2f2f5', light: '#0a2c30' }  // Teal
 };
 const DEFAULT_DARK_PALETTE = { accent: '#16a34a', bg: '#07140d', primary: '#0f3d1a', light: '#c7f9d0' };
 const DEFAULT_LIGHT_PALETTE = LIGHT_THEME_PALETTES['#16a34a'];
@@ -1210,8 +1203,8 @@ function spawnConfettiBurst(container, originX, originY, pieceCount = 70) {
         { transform: 'translate(-50%, -50%) translate(0px, 0px) rotate(0deg)', opacity: 1 },
         { transform: `translate(-50%, -50%) translate(${popXBase}px, ${popY}px) rotate(${rotate * 0.25}deg)`, opacity: 1, offset: 0.16 },
         { transform: `translate(-50%, -50%) translate(${popX}px, ${popY}px) rotate(${rotate * 0.35}deg)`, opacity: 1, offset: 0.28 },
-        { transform: `translate(-50%, -50%) translate(${popX + sway}px, ${popY + fallY * 0.35}px) rotate(${rotate * 0.75}deg)`, opacity: 1, offset: 0.55 },
-        { transform: `translate(-50%, -50%) translate(${popX - sway}px, ${popY + fallY * 0.75}px) rotate(${rotate}deg)`, opacity: 0.9, offset: 0.82 },
+        { transform: `translate(-50%, -50%) translate(${popX + sway}px, ${popY + fallY * 0.35}px) rotate(${rotate * 0.75}deg)`, opacity: 1, offset: 0.42 },
+        { transform: `translate(-50%, -50%) translate(${popX - sway}px, ${popY + fallY * 0.75}px) rotate(${rotate}deg)`, opacity: 0.9, offset: 0.64 },
         { transform: `translate(-50%, -50%) translate(${popX + driftX}px, ${popY + fallY}px) rotate(${rotate * 1.15}deg)`, opacity: 0 }
       ],
       {
@@ -1377,11 +1370,11 @@ function launchFirework(container) {
   rocket.style.height = '10px';
   rocket.style.borderRadius = '9999px';
   rocket.style.transform = 'translate(-50%, -50%)';
-  rocket.style.background = 'white';
-  rocket.style.opacity = '0.85';
-  // Keep the rocket readable, but avoid the pre-explosion "HDR white" look.
-  rocket.style.filter = 'brightness(1.35)';
-  rocket.style.boxShadow = '0 0 10px rgba(255,255,255,0.55)';
+  // Warm, fiery trail look instead of pure white.
+  rocket.style.background = 'linear-gradient(180deg, #ffd166 0%, #ff7a18 70%)';
+  rocket.style.opacity = '0.9';
+  rocket.style.filter = 'brightness(1.25) saturate(1.2)';
+  rocket.style.boxShadow = '0 0 12px rgba(255,193,79,0.75), 0 0 22px rgba(255,122,24,0.55)';
   rocket.style.mixBlendMode = 'screen';
   container.appendChild(rocket);
 

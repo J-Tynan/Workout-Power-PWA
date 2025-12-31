@@ -19,15 +19,16 @@ function createOptions({
 		stopActiveTimer();
 		setWakeLockWanted(false);
 		app.innerHTML = `
-			<div class="p-4 max-w-4xl mx-auto text-center flex flex-col h-full min-h-0">
-				<div class="flex justify-between items-center mb-4 flex-none">
+			<div class="p-4 h-full flex flex-col text-center">
+				<div class="max-w-4xl mx-auto w-full flex justify-between items-center mb-4 flex-none">
 					<button id="back-btn" class="text-light text-lg underline" aria-label="Back">Back</button>
 					<h1 class="text-4xl md:text-5xl font-bold">Options</h1>
 					<div class="w-20"></div>
 				</div>
 
-				<div class="flex-1 min-h-0 overflow-y-auto space-y-6 pb-6">
-					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
+				<div class="flex-1 min-h-0 overflow-y-auto w-full">
+					<div class="max-w-4xl mx-auto space-y-6 pb-6">
+						<div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
 						<h2 class="text-2xl font-bold mb-4 text-center">Rest Between Exercises</h2>
 						<div class="flex items-center justify-between mb-2">
 							<label class="text-lg" for="rest-duration-slider">Rest Duration</label>

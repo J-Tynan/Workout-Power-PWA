@@ -28,7 +28,7 @@ function createOptions({
 
 				<div class="flex-1 min-h-0 overflow-y-auto w-full">
 					<div class="max-w-4xl mx-auto space-y-6 pb-6">
-						<div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
+						<div class="bg-primary rounded-3xl p-4 shadow-xl text-left max-w-2xl mx-auto">
 						<h2 class="text-2xl font-bold mb-4 text-center">Rest Between Exercises</h2>
 						<div class="flex items-center justify-between mb-2">
 							<label class="text-lg" for="rest-duration-slider">Rest Duration</label>
@@ -47,7 +47,7 @@ function createOptions({
 						</div>
 					</div>
 
-					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
+					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left max-w-2xl mx-auto">
 						<h2 class="text-2xl font-bold mb-4 text-center">Volume Controls</h2>
 
 						<label class="flex items-center justify-between mb-6 cursor-pointer">
@@ -78,7 +78,7 @@ function createOptions({
 						</div>
 					</div>
 
-					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
+					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left max-w-2xl mx-auto">
 						<h2 class="text-2xl font-bold mb-4 text-center">Theme</h2>
 						<div class="flex items-center justify-between mb-4">
 							<label class="text-lg" for="theme-selector">Theme</label>
@@ -101,7 +101,7 @@ function createOptions({
 						</div>
 					</div>
 
-					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
+					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left max-w-2xl mx-auto">
 						<h2 class="text-2xl font-bold mb-4 text-center">Features</h2>
 
 						<label class="flex items-center justify-between mb-6 cursor-pointer">
@@ -132,7 +132,7 @@ function createOptions({
 						</label>
 					</div>
 
-					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left">
+					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left max-w-2xl mx-auto">
 						<h2 class="text-2xl font-bold mb-4 text-center">Debug</h2>
 						<button id="test-celebrations-btn" class="w-full bg-accent text-bg font-bold rounded-2xl py-3 px-4" aria-label="Test Celebrations">Test Celebrations</button>
 						<p id="test-celebrations-note" class="text-sm text-light/80 mt-3">Cycles through celebrations for 10 seconds.</p>

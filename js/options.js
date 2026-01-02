@@ -18,6 +18,10 @@ function createOptions({
 	let nextTestCelebrationType = 'confetti';
 
 	function loadOptions() {
+		document.body.style.overflow = 'auto';
+		app.style.overflow = 'auto';
+		app.style.height = 'auto';
+		app.style.minHeight = '100vh';
 		stopActiveTimer();
 		setWakeLockWanted(false);
 		app.innerHTML = `

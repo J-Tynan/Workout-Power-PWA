@@ -15,6 +15,10 @@ function createUi({
     try {
       stopActiveTimer();
       setWakeLockWanted(false);
+      // Ensure the main views keep scrollbars at the window edge
+      document.body.style.overflow = '';
+      app.style.overflow = 'hidden';
+      app.style.height = '100dvh';
       const response = await fetch('data/workouts/index.json');
       const workouts = await response.json();
 
@@ -64,6 +68,10 @@ function createUi({
     try {
       stopActiveTimer();
       setWakeLockWanted(false);
+      // Ensure the main views keep scrollbars at the window edge
+      document.body.style.overflow = '';
+      app.style.overflow = 'hidden';
+      app.style.height = '100dvh';
       const response = await fetch(`data/workouts/${filename}`);
       const workout = await response.json();
       setCurrentWorkout(workout, filename);
@@ -83,7 +91,7 @@ function createUi({
           <!-- Header bar: reduce p-3 for mobile, raise to p-4+ for larger screens if desired. -->
           <div class="p-3 md:p-4 bg-primary/80 flex justify-between items-center">
             <button id="back-to-menu-btn" class="text-light underline text-lg" aria-label="Back to Menu">
-              ← Back to Menu
+              Back
             </button>
             <h1 class="text-xl md:text-3xl font-bold" id="workout-title"></h1>
             <button id="options-btn-preview" class="text-light underline text-lg" aria-label="Options">

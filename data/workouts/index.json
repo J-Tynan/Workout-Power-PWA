@@ -6,12 +6,6 @@
     "filename": "quick-test.json"
   },
   {
-    "id": "warmup",
-    "name": "Dynamic Warm-Up",
-    "description": "Gentle full-body preparation.",
-    "filename": "warmup.json"
-  },
-  {
     "id": "classic",
     "name": "Classic Scientific 7-Minute Workout",
     "description": "The original 12-exercise circuit.",
@@ -25,5 +19,6 @@
   }
 
 ]
+
 
 

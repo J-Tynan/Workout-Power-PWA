@@ -259,7 +259,7 @@ function createOptions({
 		if (testCelebrationsBtn) {
 			testCelebrationsBtn.addEventListener('click', () => {
 				if (testCelebrationsNote) {
-					testCelebrationsNote.textContent = 'Cycles through celebrations for 10 seconds.';
+					testCelebrationsNote.textContent = 'Cycles between confetti and fireworks for 10 seconds.';
 				}
 
 				const settingsNow = loadSettings();
@@ -286,7 +286,7 @@ function createOptions({
 				}
 
 				try {
-					startNextCelebration(testCelebrationsBtn);
+					startNextCelebration({ mode: 'cycle' });
 				} catch {
 					if (testCelebrationsNote) {
 						testCelebrationsNote.textContent = 'Celebrations failed to start. Check the browser console for errors.';

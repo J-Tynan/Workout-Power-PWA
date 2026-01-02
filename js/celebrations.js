@@ -233,15 +233,24 @@ function shuffle(arr) {
 
 // ---- Public API ----
 
-function startNextCelebration() {
+function startNextCelebration(options) {
 	if (prefersReducedMotion()) return;
 	ensureCanvas();
 
 	// Stop any current run and start a new one
 	clearRun();
 
+	const config = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
+	const mode = config.mode === 'cycle' ? 'cycle' : 'random';
+	const forcedType = config.type === 'confetti' || config.type === 'fireworks' ? config.type : null;
+
 	const celebrationTypes = ['confetti', 'fireworks'];
-	const chosen = celebrationTypes[Math.floor(Math.random() * celebrationTypes.length)];
+	const chosen = forcedType || (mode === 'random'
+		? celebrationTypes[Math.floor(Math.random() * celebrationTypes.length)]
+		: null);
+	let nextType = mode === 'cycle'
+		? (config.startWith === 'fireworks' ? 'fireworks' : 'confetti')
+		: chosen;
 
 	const durationMs = 10000;
 	const intervalMs = 1000;
@@ -256,8 +265,12 @@ function startNextCelebration() {
 			return;
 		}
 
-		if (chosen === 'confetti') emitConfettiBurst();
+		const typeToUse = nextType || 'confetti';
+		if (typeToUse === 'confetti') emitConfettiBurst();
 		else emitFirework();
+		if (mode === 'cycle') {
+			nextType = nextType === 'confetti' ? 'fireworks' : 'confetti';
+		}
 
 		startLoop();
 		activeRun.timerId = setTimeout(tick, intervalMs);

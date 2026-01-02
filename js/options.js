@@ -15,6 +15,8 @@ function createOptions({
 	setWakeLockWanted,
 	settingsKey = 'workoutPowerSettings'
 }) {
+	let nextTestCelebrationType = 'confetti';
+
 	function loadOptions() {
 		stopActiveTimer();
 		setWakeLockWanted(false);
@@ -259,7 +261,7 @@ function createOptions({
 		if (testCelebrationsBtn) {
 			testCelebrationsBtn.addEventListener('click', () => {
 				if (testCelebrationsNote) {
-					testCelebrationsNote.textContent = 'Cycles between confetti and fireworks for 10 seconds.';
+					testCelebrationsNote.textContent = 'Plays one celebration for 10 seconds; clicks alternate between confetti and fireworks.';
 				}
 
 				const settingsNow = loadSettings();
@@ -286,7 +288,8 @@ function createOptions({
 				}
 
 				try {
-					startNextCelebration({ mode: 'cycle' });
+					startNextCelebration({ type: nextTestCelebrationType });
+					nextTestCelebrationType = nextTestCelebrationType === 'confetti' ? 'fireworks' : 'confetti';
 				} catch {
 					if (testCelebrationsNote) {
 						testCelebrationsNote.textContent = 'Celebrations failed to start. Check the browser console for errors.';

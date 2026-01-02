@@ -94,6 +94,7 @@ function updateParticle(p, now) {
 		p.vy += 300 * dt;
 		p.x += p.vx * dt;
 		p.y += p.vy * dt;
+		if (p.targetY && p.y <= p.targetY) p.explode = true;
 		if (p.vy > -30) p.explode = true;
 		p.life -= dt;
 	} else if (p.type === 'spark') {
@@ -167,9 +168,9 @@ function emitConfettiBurst() {
 }
 
 function emitFirework() {
-	const startX = canvas.width * (0.2 + Math.random() * 0.6);
-	const startY = canvas.height + 20;
-	const targetVy = -600 - Math.random() * 200;
+	const startX = canvas.width * (0.1 + Math.random() * 0.8);
+	const startY = canvas.height - 10;
+	const targetY = canvas.height * (0.2 + Math.random() * 0.35);
 	const colorMode = Math.random() < 0.5 ? 'single' : 'multi';
 	const palette = colorMode === 'single'
 		? [TAILWIND_COLORS[Math.floor(Math.random() * TAILWIND_COLORS.length)]]
@@ -179,8 +180,9 @@ function emitFirework() {
 		type: 'rocket',
 		x: startX,
 		y: startY,
-		vx: (Math.random() - 0.5) * 60,
-		vy: targetVy,
+		vx: (Math.random() - 0.5) * 30,
+		vy: -(420 + Math.random() * 140),
+		targetY,
 		trailColor: palette[0],
 		explode: false,
 		life: 1.8 + Math.random() * 0.6,
@@ -201,6 +203,8 @@ function emitFirework() {
 }
 
 function spawnExplosion(x, y, palette) {
+	const clampedX = Math.min(Math.max(x, 40), canvas.width - 40);
+	const clampedY = Math.min(Math.max(y, 60), canvas.height * 0.7);
 	const count = 70 + Math.random() * 40;
 	const hang = Math.random() < 0.4 ? 0.4 : 0; // sometimes hang briefly
 	for (let i = 0; i < count; i++) {
@@ -209,8 +213,8 @@ function spawnExplosion(x, y, palette) {
 		const color = palette[Math.floor(Math.random() * palette.length)];
 		particles.push({
 			type: 'spark',
-			x,
-			y,
+			x: clampedX,
+			y: clampedY,
 			vx: Math.cos(angle) * speed,
 			vy: Math.sin(angle) * speed,
 			r: 2 + Math.random() * 2.5,
@@ -241,7 +245,7 @@ function startNextCelebration(options) {
 	clearRun();
 
 	const config = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
-	const mode = config.mode === 'cycle' ? 'cycle' : 'random';
+	const mode = config.type ? 'single' : (config.mode === 'cycle' ? 'cycle' : 'random');
 	const forcedType = config.type === 'confetti' || config.type === 'fireworks' ? config.type : null;
 
 	const celebrationTypes = ['confetti', 'fireworks'];

@@ -1,6 +1,6 @@
 // Main app entry point
 import { startNextCelebration, prefersReducedMotion } from './celebrations.js';
-import { applyTheme, applyThemeFromSettings, registerSystemThemeChangeListener, DEFAULT_LIGHT_COLOR } from './theme.js';
+import { applyTheme, applyThemeFromSettings, registerSystemThemeChangeListener } from './theme.js';
 import { createOptions } from './options.js';
 import { createTimer } from './timer.js';
 import { createUi } from './ui.js';
@@ -34,22 +34,17 @@ function loadSettings() {
   }
 
   let changed = false;
-  if (settings.userSetTheme !== true) {
-    // If a theme was previously chosen but userSetTheme flag wasn't recorded (older saves), honor it.
-    if (settings.theme) {
-      settings.userSetTheme = true;
-    } else {
-      settings.theme = 'system';
-      settings.userSetTheme = false;
-    }
+  if (settings.theme !== 'system' && settings.theme !== 'light' && settings.theme !== 'dark') {
+    settings.theme = 'system';
     changed = true;
   }
-  if (!settings.lightColor) {
-    settings.lightColor = DEFAULT_LIGHT_COLOR;
+  // Remove legacy theme fields (we no longer support custom light colors)
+  if ('lightColor' in settings) {
+    delete settings.lightColor;
     changed = true;
   }
-  if (typeof settings.userSetTheme !== 'boolean') {
-    settings.userSetTheme = settings.theme && settings.theme !== 'system';
+  if ('userSetTheme' in settings) {
+    delete settings.userSetTheme;
     changed = true;
   }
 
@@ -200,7 +195,6 @@ function setWakeLockWanted(nextWanted) {
   app,
   loadSettings,
   applyTheme,
-  DEFAULT_LIGHT_COLOR,
   startNextCelebration,
   prefersReducedMotion,
   loadWorkoutPreview,

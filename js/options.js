@@ -4,7 +4,6 @@ function createOptions({
 	app,
 	loadSettings,
 	applyTheme,
-	DEFAULT_LIGHT_COLOR,
 	startNextCelebration,
 	prefersReducedMotion,
 	loadWorkoutPreview,
@@ -88,23 +87,12 @@ function createOptions({
 
 					<div class="bg-primary rounded-3xl p-4 shadow-xl text-left max-w-2xl mx-auto">
 						<h2 class="text-2xl font-bold mb-4 text-center">Theme</h2>
-						<div class="flex items-center justify-between mb-4">
+						<div class="flex items-center justify-between">
 							<label class="text-lg" for="theme-selector">Theme</label>
 							<select id="theme-selector" class="bg-bg text-light rounded-md px-3 py-2" aria-label="Theme">
-								<option value="system">System</option>
-								<option value="light">Light</option>
-								<option value="dark">Dark</option>
-							</select>
-						</div>
-						<div class="flex items-center justify-between">
-							<label class="text-lg" for="light-color-select">Light Theme</label>
-							<select id="light-color-select" class="bg-bg text-light rounded-md px-3 py-2" aria-label="Light Theme">
-								<option value="#16A34A">Green</option>
-								<option value="#3B82F6">Blue</option>
-								<option value="#F43F5E">Rose</option>
-								<option value="#10B981">Emerald</option>
-								<option value="#F59E0B">Amber</option>
-								<option value="#6366F1">Indigo</option>
+								<option value="system">Device Theme</option>
+								<option value="light">Light Theme</option>
+								<option value="dark">Dark Theme</option>
 							</select>
 						</div>
 					</div>
@@ -152,7 +140,6 @@ function createOptions({
 		history.pushState({ view: 'options' }, '', '#options');
 
 		let settings = loadSettings();
-		let userSetTheme = settings.userSetTheme === true;
 
 		const restSlider = document.getElementById('rest-duration-slider');
 		const restValue = document.getElementById('rest-duration-value');
@@ -163,7 +150,6 @@ function createOptions({
 		const beepSlider = document.getElementById('beep-volume-slider');
 		const beepValue = document.getElementById('beep-volume-value');
 		const themeSelector = document.getElementById('theme-selector');
-		const lightColorSelect = document.getElementById('light-color-select');
 
 		restSlider.value = settings.restDuration ?? 10;
 		restValue.textContent = `${restSlider.value}s`;
@@ -183,33 +169,20 @@ function createOptions({
 		document.getElementById('toggle-celebrations').checked = settings.celebrations ?? true;
 
 		const defaultTheme = settings.theme ?? 'system';
-		const defaultLightColor = settings.lightColor ?? DEFAULT_LIGHT_COLOR;
 		if (themeSelector) themeSelector.value = defaultTheme;
-		if (lightColorSelect) {
-			lightColorSelect.value = defaultLightColor;
-			if (lightColorSelect.value !== defaultLightColor) {
-				lightColorSelect.selectedIndex = 0;
-			}
-		}
+		applyTheme(defaultTheme);
 
-		applyTheme(defaultTheme, defaultLightColor);
-
-		function saveSettings(themeChanged = false) {
-			if (themeChanged) userSetTheme = true;
+		function saveSettings() {
 			const current = {
 				restDuration: parseInt(restSlider.value),
 				preWorkoutSeconds: parseInt(preworkoutSlider.value),
 				voiceVolume: parseInt(voiceSlider.value),
 				beepVolume: parseInt(beepSlider.value),
 				theme: themeSelector ? themeSelector.value : 'system',
-				lightColor: lightColorSelect
-					? lightColorSelect.value
-					: (getComputedStyle(document.documentElement).getPropertyValue('--default-accent').trim() || DEFAULT_LIGHT_COLOR),
 				vibration: document.getElementById('toggle-vibration').checked,
 				wakelock: document.getElementById('toggle-wakelock').checked,
 				sounds: document.getElementById('toggle-sounds').checked,
-				celebrations: document.getElementById('toggle-celebrations').checked,
-				userSetTheme
+				celebrations: document.getElementById('toggle-celebrations').checked
 			};
 			localStorage.setItem(settingsKey, JSON.stringify(current));
 			settings = current;
@@ -234,18 +207,8 @@ function createOptions({
 
 		if (themeSelector) {
 			themeSelector.addEventListener('change', () => {
-				const theme = themeSelector.value;
-				const lightColor = lightColorSelect ? lightColorSelect.value : null;
-				applyTheme(theme, lightColor);
-				saveSettings(true);
-			});
-		}
-		if (lightColorSelect) {
-			lightColorSelect.addEventListener('change', () => {
-				const theme = themeSelector ? themeSelector.value : 'system';
-				const lightColor = lightColorSelect.value;
-				applyTheme(theme, lightColor);
-				saveSettings(true);
+				applyTheme(themeSelector.value);
+				saveSettings();
 			});
 		}
 		['celebrations', 'vibration', 'wakelock', 'sounds'].forEach(id => {

@@ -9,7 +9,7 @@
   <!-- PWA manifest and icons (we'll improve icons later) -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="assets/icon-192.png" />
-  <meta name="theme-color" content="#0D2818" />
+	<meta name="theme-color" content="#F0FDF4" />
 
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -39,11 +39,10 @@
 	:root {
 		/* Base palette (Light). JS can override these for the selected light accent. */
 		/* Slightly darker to reduce brightness while staying Tailwind-compatible (alpha-capable). */
-		--color-bg: 236 242 246; /* softer slate */
-		--color-primary: 220 234 224; /* muted panel background */
+		--color-bg: 240 253 244; /* green-50 */
+		--color-primary: 220 252 231; /* green-100 */
 		--color-accent: 22 163 74; /* green-600 */
-		--color-light: 17 24 39; /* text/dark */
-		--default-accent: #16A34A;
+		--color-light: 17 24 39; /* slate-900 */
 	}
 	/* Dark theme override (Tailwind 'dark' mode uses html.dark). */
 	html.dark {

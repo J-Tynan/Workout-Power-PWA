@@ -5,10 +5,6 @@ import { renderSettings } from '../ui/screens/settingsscreen.js';
 
 const root = document.getElementById('app');
 
-subscribe(state => {
-  document.documentElement.setAttribute('data-theme', state.theme);
-});
-
 export function initRoutes() {
   subscribe(state => {
     root.innerHTML = '';
@@ -17,4 +13,5 @@ export function initRoutes() {
     if (state.screen === 'workout') renderWorkout(root);
     if (state.screen === 'settings') renderSettings(root);
   });
+
 }

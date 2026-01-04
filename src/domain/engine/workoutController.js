@@ -1,4 +1,3 @@
-import { setState, getState } from '../../app/state.js';
 import { startRunner, pauseRunner, resumeRunner, stopRunner } from './workoutRunner.js';
 
 export function startWorkout(workout) {
@@ -41,3 +40,4 @@ function onExerciseChange(exercise) {
 function onFinish() {
   setState({ phase: 'finished' });
 }
+

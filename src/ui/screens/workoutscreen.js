@@ -8,6 +8,10 @@ import {
 
 export function renderWorkout(root) {
   const state = getState();
+  const { currentExercise, remainingSeconds, phase } = state;
+
+  const exercise = currentExercise?.exercise;
+  const nextExercise = currentExercise?.nextExercise;
 
   /* ---------- Header ---------- */
 
@@ -16,7 +20,8 @@ export function renderWorkout(root) {
 
   const title = document.createElement('div');
   title.className = 'flex-1 text-center font-semibold';
-  title.textContent = '7‑Minute Workout';
+  title.textContent =
+    phase === 'rest' ? 'Rest' : 'Workout';
 
   header.append(title);
 
@@ -26,21 +31,27 @@ export function renderWorkout(root) {
   main.className =
     'flex flex-col items-center justify-center gap-6 text-center';
 
-  const exerciseName = document.createElement('div');
-  exerciseName.className = 'text-xl font-medium';
-  exerciseName.textContent =
-    state.currentExercise?.name || 'Get Ready';
+  const name = document.createElement('div');
+  name.className = 'text-xl font-medium';
+
+  if (phase === 'rest') {
+    name.textContent = 'Take a breather';
+  } else {
+    name.textContent = exercise?.name ?? 'Get Ready';
+  }
 
   const timer = document.createElement('div');
   timer.className = 'text-6xl font-bold';
-  timer.textContent = formatTime(state.remainingSeconds);
+  timer.textContent = formatTime(remainingSeconds);
 
-  const nextExercise = document.createElement('div');
-  nextExercise.className = 'text-sm opacity-70';
-  nextExercise.textContent =
-    state.currentExercise?.next
-      ? `Next: ${state.currentExercise.next}`
-      : '';
+  const next = document.createElement('div');
+  next.className = 'text-sm opacity-70';
+
+  if (phase === 'rest' && nextExercise) {
+    next.textContent = `Next: ${nextExercise.name}`;
+  } else {
+    next.textContent = '';
+  }
 
   const pauseButton = document.createElement('button');
   pauseButton.className = 'btn btn-primary btn-lg mt-4';
@@ -63,9 +74,9 @@ export function renderWorkout(root) {
   });
 
   main.append(
-    exerciseName,
+    name,
     timer,
-    nextExercise,
+    next,
     pauseButton,
     endButton
   );
@@ -89,6 +100,8 @@ function formatTime(seconds = 0) {
   const m = Math.floor(seconds / 60)
     .toString()
     .padStart(2, '0');
-  const s = (seconds % 60).toString().padStart(2, '0');
+  const s = (seconds % 60)
+    .toString()
+    .padStart(2, '0');
   return `${m}:${s}`;
 }

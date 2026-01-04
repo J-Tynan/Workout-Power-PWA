@@ -1,7 +1,7 @@
 import { subscribe } from '../app/state.js';
 
-let lastExerciseId = null;
 let lastPhase = null;
+let countdownSpokenFor = null;
 
 export function initVoice() {
   subscribe(state => {
@@ -9,9 +9,13 @@ export function initVoice() {
     if (!state.currentExercise) return;
 
     const { exercise, phase } = state.currentExercise;
+    const seconds = state.remainingSeconds;
 
-    // Phase change
+    /* ---------- Phase change cues ---------- */
+
     if (phase !== lastPhase) {
+      countdownSpokenFor = null;
+
       if (phase === 'work') {
         speak(exercise.voiceCueStart);
       }
@@ -19,10 +23,21 @@ export function initVoice() {
       if (phase === 'rest') {
         speak(exercise.voiceCueNext);
       }
+
+      lastPhase = phase;
     }
 
-    lastPhase = phase;
-    lastExerciseId = exercise.id;
+    /* ---------- Countdown cue ---------- */
+
+    if (
+      phase === 'work' &&
+      seconds === 10 &&
+      exercise.voiceCueCountdown &&
+      countdownSpokenFor !== exercise.id
+    ) {
+      speak(exercise.voiceCueCountdown);
+      countdownSpokenFor = exercise.id;
+    }
   });
 }
 

@@ -1,6 +1,7 @@
 import { initState } from './state.js';
 import { initRoutes } from './routes.js';
 import { saveSettings } from './storage.js';
+import { initVoice } from '../domain/audio/voice.js';
 
 export function bootstrap() {
   initState();
@@ -20,3 +21,4 @@ export function bootstrap() {
 subscribe(state => {
   document.documentElement.setAttribute('data-theme', state.theme);
 });
+

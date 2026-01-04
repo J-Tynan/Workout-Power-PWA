@@ -12,14 +12,11 @@ export function bootstrap() {
       soundEnabled: state.soundEnabled,
       voice: state.voice
     });
+
+    document.documentElement.setAttribute('data-theme', state.theme);
   });
 }
 
 subscribe(state => {
   document.documentElement.setAttribute('data-theme', state.theme);
 });
-
-export function bootstrap() {
-  initState();
-  initRoutes();
-}

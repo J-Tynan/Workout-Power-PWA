@@ -1,30 +1,38 @@
 let timerId = null;
-let remainingSeconds = 0;
-let currentIndex = 0;
 let paused = false;
-let workoutData = null;
+
+let workout = null;
+let exerciseIndex = 0;
+let phase = 'work'; // 'work' | 'rest'
+let remainingSeconds = 0;
 
 let onTickCb = null;
 let onExerciseChangeCb = null;
 let onFinishCb = null;
 
-export function startRunner(workout, onTick, onExerciseChange, onFinish) {
+export function startRunner(
+  workoutData,
+  onTick,
+  onExerciseChange,
+  onFinish
+) {
   stopRunner();
 
-  workoutData = workout.exercises || [];
-  currentIndex = 0;
+  workout = workoutData;
+  exerciseIndex = 0;
+  phase = 'work';
   paused = false;
 
   onTickCb = onTick;
   onExerciseChangeCb = onExerciseChange;
   onFinishCb = onFinish;
 
-  if (!workoutData.length) {
+  if (!workout.exercises?.length) {
     onFinishCb?.();
     return;
   }
 
-  startExercise();
+  startPhase();
 }
 
 export function pauseRunner() {
@@ -44,27 +52,43 @@ export function stopRunner() {
   clearInterval(timerId);
   timerId = null;
 
-  remainingSeconds = 0;
-  currentIndex = 0;
   paused = false;
-  workoutData = null;
+  workout = null;
+  exerciseIndex = 0;
+  phase = 'work';
+  remainingSeconds = 0;
 
   onTickCb = null;
   onExerciseChangeCb = null;
   onFinishCb = null;
 }
 
-/* ---------- Internal helpers ---------- */
+/* ---------- Internal ---------- */
 
-function startExercise() {
-  const exercise = workoutData[currentIndex];
+function startPhase() {
+  const exercise = workout.exercises[exerciseIndex];
 
-  remainingSeconds = exercise.duration;
+  if (phase === 'work') {
+    remainingSeconds =
+      exercise.durationSeconds ??
+      workout.defaultWorkSeconds;
 
-  onExerciseChangeCb?.({
-    name: exercise.name,
-    next: workoutData[currentIndex + 1]?.name || null
-  });
+    onExerciseChangeCb?.({
+      exercise,
+      phase: 'work',
+      nextExercise:
+        workout.exercises[exerciseIndex + 1] ?? null
+    });
+  } else {
+    remainingSeconds = workout.defaultRestSeconds;
+
+    onExerciseChangeCb?.({
+      exercise,
+      phase: 'rest',
+      nextExercise:
+        workout.exercises[exerciseIndex + 1] ?? null
+    });
+  }
 
   onTickCb?.(remainingSeconds);
   startTimer();
@@ -80,19 +104,23 @@ function startTimer() {
     if (remainingSeconds <= 0) {
       clearInterval(timerId);
       timerId = null;
-      advanceExercise();
+      advance();
     }
   }, 1000);
 }
 
-function advanceExercise() {
-  currentIndex += 1;
-
-  if (currentIndex >= workoutData.length) {
-    onFinishCb?.();
-    stopRunner();
-    return;
+function advance() {
+  if (phase === 'work') {
+    if (exerciseIndex === workout.exercises.length - 1) {
+      onFinishCb?.();
+      stopRunner();
+      return;
+    }
+    phase = 'rest';
+  } else {
+    phase = 'work';
+    exerciseIndex += 1;
   }
 
-  startExercise();
+  startPhase();
 }

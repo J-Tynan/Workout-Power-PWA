@@ -1,7 +1,3 @@
-import { initState } from './state.js';
-import { initRoutes } from './routes.js';
+import { bootstrap } from './app/bootstrap.js';
 
-export function bootstrap() {
-  initState();
-  initRoutes();
-}
+bootstrap();

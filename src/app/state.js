@@ -1,3 +1,5 @@
+import { loadSettings } from './storage.js';
+
 let state = {
   screen: 'home',
   theme: 'light',
@@ -34,3 +36,4 @@ export function initState() {
     ...saved
   };
 }
+

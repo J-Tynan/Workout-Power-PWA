@@ -1,80 +1,124 @@
 import { AppShell } from '../layout/appshell.js';
 import { getState, setState } from '../../app/state.js';
 
-const themeToggle = document.querySelector('#theme-toggle');
-
-themeToggle.checked = getState().theme === 'dark';
-
-themeToggle.addEventListener('change', e => {
-  setState({
-    theme: e.target.checked ? 'dark' : 'light'
-  });
-});
-
-const soundToggle = document.querySelector('#sound-toggle');
-
-soundToggle.checked = getState().soundEnabled;
-
-soundToggle.addEventListener('change', e => {
-  setState({ soundEnabled: e.target.checked });
-});
-
-const voiceSelect = document.querySelector('#voice-select');
-
-voiceSelect.value = getState().voice;
-
-voiceSelect.addEventListener('change', e => {
-  setState({ voice: e.target.value });
-});
-
 export function renderSettings(root) {
+  const state = getState();
+
+  /* ---------- Header ---------- */
+
   const header = document.createElement('div');
-  header.textContent = 'Workout Power PWA';
+  header.className = 'flex items-center w-full';
+
+  const backButton = document.createElement('button');
+  backButton.className = 'btn btn-ghost btn-square';
+  backButton.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+         viewBox="0 0 24 24" stroke-width="1.5"
+         stroke="currentColor" class="size-6">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+    </svg>
+  `;
+
+  backButton.addEventListener('click', () => {
+    setState({ screen: 'home' });
+  });
+
+  const title = document.createElement('div');
+  title.className = 'flex-1 text-center font-semibold';
+  title.textContent = 'Settings';
+
+  header.append(backButton, title);
+
+  /* ---------- Main ---------- */
 
   const main = document.createElement('div');
-  main.textContent = 'Settings screen';
+  main.className = 'flex flex-col gap-4';
+
+  /* Theme toggle */
+
+  const themeCard = createToggleCard(
+    'Dark mode',
+    state.theme === 'dark',
+    checked => {
+      setState({ theme: checked ? 'dark' : 'light' });
+    }
+  );
+
+  /* Sound toggle */
+
+  const soundCard = createToggleCard(
+    'Sounds',
+    state.soundEnabled,
+    checked => {
+      setState({ soundEnabled: checked });
+    }
+  );
+
+  /* Voice select */
+
+  const voiceCard = document.createElement('div');
+  voiceCard.className = 'card bg-base-200';
+
+  const voiceBody = document.createElement('div');
+  voiceBody.className = 'card-body';
+
+  const voiceLabel = document.createElement('label');
+  voiceLabel.className = 'label';
+  voiceLabel.textContent = 'Voice';
+
+  const voiceSelect = document.createElement('select');
+  voiceSelect.className = 'select select-bordered w-full';
+
+  ['auto', 'Voice A', 'Voice B'].forEach(v => {
+    const option = document.createElement('option');
+    option.value = v;
+    option.textContent = v;
+    if (v === state.voice) option.selected = true;
+    voiceSelect.append(option);
+  });
+
+  voiceSelect.addEventListener('change', e => {
+    setState({ voice: e.target.value });
+  });
+
+  voiceBody.append(voiceLabel, voiceSelect);
+  voiceCard.append(voiceBody);
+
+  main.append(themeCard, soundCard, voiceCard);
+
+  /* ---------- Mount ---------- */
 
   root.append(AppShell({ header, main }));
 }
 
-<button class="btn btn-ghost btn-square">
-  <!-- Heroicon: arrow-left -->
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-</svg>
-</button>
+/* ---------- Helpers ---------- */
 
-<div class="flex-1 text-center font-semibold">
-  Settings
-</div>
+function createToggleCard(labelText, checked, onChange) {
+  const card = document.createElement('div');
+  card.className = 'card bg-base-200';
 
-<div class="card bg-base-200 mb-4">
-  <div class="card-body">
-    <div class="flex items-center justify-between">
-      <span>Dark mode</span>
-      <input type="checkbox" class="toggle toggle-primary" />
-    </div>
-  </div>
-</div>
+  const body = document.createElement('div');
+  body.className = 'card-body';
 
-<div class="card bg-base-200 mb-4">
-  <div class="card-body">
-    <div class="flex items-center justify-between">
-      <span>Sounds</span>
-      <input type="checkbox" class="toggle toggle-primary" checked />
-    </div>
-  </div>
-</div>
+  const row = document.createElement('div');
+  row.className = 'flex items-center justify-between';
 
-<div class="card bg-base-200 mb-4">
-  <div class="card-body">
-    <label class="label">
-      <span class="label-text">Voice</span>
-    </label>
-    <select class="select select-bordered w-full">
-      <option>Auto</option>
-      <option>Voice A</option>
-      <option>Voice B</option>
-    </select>
-  </div>
-</div>
+  const label = document.createElement('span');
+  label.textContent = labelText;
+
+  const toggle = document.createElement('input');
+  toggle.type = 'checkbox';
+  toggle.className = 'toggle toggle-primary';
+  toggle.checked = checked;
+
+  toggle.addEventListener('change', e => {
+    onChange(e.target.checked);
+  });
+
+  row.append(label, toggle);
+  body.append(row);
+  card.append(body);
+
+  return card;
+}

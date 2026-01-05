@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  base: '/Workout-Power-PWA/',
   plugins: [
     VitePWA({
       registerType: 'autoUpdate',  // Automatically registers and updates the service worker

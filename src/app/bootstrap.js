@@ -1,4 +1,4 @@
-import { initState } from './state.js';
+import { initState, subscribe } from './state.js';
 import { initRoutes } from './routes.js';
 import { saveSettings } from './storage.js';
 import { initVoice } from '../domain/audio/voice.js';
@@ -17,8 +17,4 @@ export function bootstrap() {
     document.documentElement.setAttribute('data-theme', state.theme);
   });
 }
-
-subscribe(state => {
-  document.documentElement.setAttribute('data-theme', state.theme);
-});
 

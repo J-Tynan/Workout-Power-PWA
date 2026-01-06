@@ -1,4 +1,5 @@
 import { startRunner, pauseRunner, resumeRunner, stopRunner } from './workoutRunner.js';
+import { setState } from '../../app/state.js';
 
 export function startWorkout(workout) {
   setState({

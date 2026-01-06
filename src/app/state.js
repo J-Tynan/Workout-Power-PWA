@@ -1,10 +1,22 @@
 import { loadSettings } from './storage.js';
 
+function getDefaultTheme() {
+  try {
+    if (globalThis?.matchMedia?.('(prefers-color-scheme: dark)')?.matches) {
+      return 'dark';
+    }
+  } catch {
+    // ignore
+  }
+  return 'light';
+}
+
 let state = {
   screen: 'home',
-  theme: 'light',
+  theme: getDefaultTheme(),
   soundEnabled: true,
   voice: 'auto',
+  selectedWorkoutId: 'classic',
   workout: null,
   phase: 'idle',        // idle | running | paused | finished
   currentExercise: null,
@@ -29,11 +41,12 @@ export function subscribe(fn) {
 
 export function initState() {
   const saved = loadSettings();
-  if (!saved) return;
-
-  state = {
-    ...state,
-    ...saved
-  };
+  if (saved) {
+    state = {
+      ...state,
+      ...saved,
+      theme: saved.theme ?? state.theme
+    };
+  }
 }
 

@@ -1,4 +1,4 @@
-import { initState, subscribe } from './state.js';
+import { getState, initState, subscribe } from './state.js';
 import { initRoutes } from './routes.js';
 import { saveSettings } from './storage.js';
 import { initVoice } from '../domain/audio/voice.js';
@@ -7,7 +7,7 @@ export function bootstrap() {
   initState();
   initRoutes();
 
-  subscribe(state => {
+  const onState = state => {
     saveSettings({
       theme: state.theme,
       soundEnabled: state.soundEnabled,
@@ -15,6 +15,9 @@ export function bootstrap() {
     });
 
     document.documentElement.setAttribute('data-theme', state.theme);
-  });
+  };
+
+  subscribe(onState);
+  onState(getState());
 }
 

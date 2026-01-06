@@ -1,19 +1,27 @@
 import { AppShell } from '../layout/appshell.js';
-import { setState } from '../../app/state.js';
+import { getState, setState, subscribe } from '../../app/state.js';
 import { startWorkout } from '../../domain/engine/workoutController.js';
+import { getWorkoutById, workouts } from '../../domain/workouts/index.js';
 
 export function renderHome(root) {
+  // If already mounted (e.g., hot reload), don't mount twice.
+  if (root.querySelector('[data-screen="home-container"]')) {
+    return () => {};
+  }
+
+  const state = getState();
+
   /* ---------- Header ---------- */
 
   const header = document.createElement('div');
-  header.className = 'flex items-center w-full';
+  header.className = 'relative flex items-center w-full';
 
   const title = document.createElement('div');
-  title.className = 'flex-1 text-lg font-semibold';
+  title.className = 'absolute left-1/2 -translate-x-1/2 text-4xl font-sans font-semibold whitespace-nowrap';
   title.textContent = 'Workout Power';
 
   const settingsButton = document.createElement('button');
-  settingsButton.className = 'btn btn-ghost btn-square';
+  settingsButton.className = 'btn btn-ghost btn-square ml-auto';
   settingsButton.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
          viewBox="0 0 24 24" stroke-width="1.5"
@@ -59,37 +67,106 @@ export function renderHome(root) {
   const main = document.createElement('div');
   main.className = 'flex flex-col gap-6';
 
-  const card = document.createElement('div');
-  card.className = 'card bg-base-200';
-
-  const cardBody = document.createElement('div');
-  cardBody.className = 'card-body';
-
-  const workoutTitle = document.createElement('h2');
-  workoutTitle.className = 'card-title';
-  workoutTitle.textContent = '7‑Minute Workout';
-
-  const workoutDesc = document.createElement('p');
-  workoutDesc.textContent = 'Full body, no equipment';
-
-  const workoutMeta = document.createElement('p');
-  workoutMeta.className = 'text-sm opacity-70';
-  workoutMeta.textContent = '7 minutes';
-
-  cardBody.append(workoutTitle, workoutDesc, workoutMeta);
-  card.append(cardBody);
-
   const startButton = document.createElement('button');
-  startButton.className = 'btn btn-primary btn-block btn-lg';
+  // DaisyUI applies an active scale animation by default; override it.
+  startButton.className = 'btn btn-primary btn-block btn-lg text-2xl active:scale-100 transition-none';
   startButton.textContent = 'Start workout';
 
   startButton.addEventListener('click', () => {
-    startWorkout({ id: '7min' });
+    const workout = getWorkoutById(getState().selectedWorkoutId) ?? workouts[0];
+    if (!workout) return;
+    startWorkout(workout);
   });
 
-  main.append(card, startButton);
+  const list = document.createElement('div');
+  list.className = 'flex flex-col gap-3';
+
+  const cardsById = new Map();
+
+  workouts.forEach(workout => {
+    const selected = workout.id === state.selectedWorkoutId;
+
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className =
+      'w-full text-left rounded-box bg-base-200 border border-base-300 overflow-hidden ' +
+      'hover:bg-base-300 hover:border-primary/40 active:bg-base-300 ' +
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40';
+    if (selected) {
+      card.classList.add('border-primary', 'bg-base-300');
+    }
+
+    card.addEventListener('click', () => {
+      setState({ selectedWorkoutId: workout.id });
+    });
+
+    cardsById.set(workout.id, card);
+
+    const cardBody = document.createElement('div');
+    cardBody.className = 'px-5 py-4 flex flex-col gap-1';
+
+    const workoutTitle = document.createElement('h2');
+    workoutTitle.className = 'font-semibold leading-tight truncate';
+    workoutTitle.textContent = workout.name;
+
+    const workoutDesc = document.createElement('p');
+    workoutDesc.className = 'text-sm opacity-80 truncate';
+    workoutDesc.textContent = workout.description ?? '';
+
+    const workoutMeta = document.createElement('p');
+    workoutMeta.className = 'text-xs opacity-70';
+    const totalSeconds = getWorkoutTotalSeconds(workout);
+    workoutMeta.textContent = `${workout.exercises?.length ?? 0} exercises • ${formatDuration(totalSeconds)} (includes rest)`;
+
+    cardBody.append(workoutTitle, workoutDesc, workoutMeta);
+    card.append(cardBody);
+    list.append(card);
+  });
+
+  main.append(startButton, list);
 
   /* ---------- Mount ---------- */
 
-  root.append(AppShell({ header, main }));
+  const container = document.createElement('div');
+  container.setAttribute('data-screen', 'home-container');
+  container.append(AppShell({ header, main }));
+  root.append(container);
+
+  const unsubscribe = subscribe(s => {
+    // Update selected styling in place without re-mounting the screen.
+    for (const workout of workouts) {
+      const card = cardsById.get(workout.id);
+      if (!card) continue;
+
+      const isSelected = workout.id === s.selectedWorkoutId;
+      card.classList.toggle('border-primary', isSelected);
+      card.classList.toggle('bg-base-300', isSelected);
+    }
+  });
+
+  return unsubscribe;
+}
+
+function getWorkoutTotalSeconds(workout) {
+  const exercises = workout.exercises ?? [];
+  const exerciseCount = exercises.length;
+
+  const defaultWorkSeconds = workout.defaultWorkSeconds ?? 0;
+  const defaultRestSeconds = workout.defaultRestSeconds ?? 0;
+
+  const workSeconds = exercises.reduce((sum, exercise) => {
+    return sum + (exercise.durationSeconds ?? defaultWorkSeconds);
+  }, 0);
+
+  const restSeconds = exerciseCount > 1
+    ? defaultRestSeconds * (exerciseCount - 1)
+    : 0;
+
+  return workSeconds + restSeconds;
+}
+
+function formatDuration(totalSeconds = 0) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}m ${seconds}s`;
 }

@@ -1,4 +1,4 @@
-import { subscribe } from '../app/state.js';
+import { subscribe } from '../../app/state.js';
 
 let lastPhase = null;
 let countdownSpokenFor = null;

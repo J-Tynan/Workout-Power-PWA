@@ -86,7 +86,7 @@ export function renderWorkout(root) {
       : 'Tap anywhere to pause';
 
   const endButton = document.createElement('button');
-  endButton.className = 'btn btn-ghost btn-sm mt-2';
+  endButton.className = 'btn btn-ghost btn-sm mt-2 active:scale-100 transition-none';
   endButton.textContent = 'End workout';
 
   endButton.addEventListener('click', e => {

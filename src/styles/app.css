@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Keep this file minimal: DaisyUI supplies most component styling. */
+html, body {
+  height: 100%;
+}

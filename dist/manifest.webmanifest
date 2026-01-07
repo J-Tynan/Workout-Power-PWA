@@ -1,1 +1,1 @@
-{"name":"workout-power-pwa","short_name":"workout-power-pwa","start_url":"/Workout-Power-PWA/","display":"standalone","background_color":"#ffffff","theme_color":"#42b883","lang":"en","scope":"/Workout-Power-PWA/"}
+{"name":"Workout Power","short_name":"W Power","start_url":".","display":"standalone","background_color":"#0b1f14","theme_color":"#0b1f14","lang":"en","scope":"/Workout-Power-PWA/","icons":[{"src":"icon.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any"}]}

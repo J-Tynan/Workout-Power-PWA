@@ -3,20 +3,18 @@ import { renderHome } from '../ui/screens/homescreen.js';
 import { renderWorkout } from '../ui/screens/workoutscreen.js';
 import { renderSettings } from '../ui/screens/settingsscreen.js';
 
-export function initRoutes() {
-  const root = document.getElementById('app');
-  if (!root) return;
+const root = document.getElementById('app');
 
+export function initRoutes() {
   let currentScreen = null;
   let currentCleanup = null;
 
-  const render = state => {
+  const mount = state => {
     // Only mount/unmount when the screen changes.
     if (state.screen === currentScreen) return;
 
-    // cleanup previous screen subscription if provided
     if (typeof currentCleanup === 'function') {
-      try { currentCleanup(); } catch (e) { /* ignore */ }
+      try { currentCleanup(); } catch { /* ignore */ }
       currentCleanup = null;
     }
 
@@ -24,12 +22,11 @@ export function initRoutes() {
 
     if (state.screen === 'home') currentCleanup = renderHome(root);
     if (state.screen === 'workout') currentCleanup = renderWorkout(root);
-    if (state.screen === 'settings') renderSettings(root);
+    if (state.screen === 'settings') currentCleanup = renderSettings(root);
 
     currentScreen = state.screen;
   };
 
-  subscribe(render);
-  render(getState());
-
+  subscribe(mount);
+  mount(getState());
 }

@@ -63,7 +63,7 @@ export function renderWorkout(root) {
   nextExerciseEl.className = 'text-sm opacity-70';
   nextExerciseEl.setAttribute('data-el', 'nextExercise');
 
-  const restSeconds = state.workout?.defaultRestSeconds ?? 0;
+  const restSeconds = state.restSeconds ?? state.workout?.defaultRestSeconds ?? 0;
   const shouldShowNextRest = intervalPhase === 'work' && !!nextExercise;
   const shouldShowNextExercise = !!nextExercise;
 
@@ -123,7 +123,7 @@ export function renderWorkout(root) {
   const unsubscribe = subscribe(s => {
     const intervalPhase = s.currentExercise?.phase;
     const nextExercise = s.currentExercise?.nextExercise;
-    const restSeconds = s.workout?.defaultRestSeconds ?? 0;
+    const restSeconds = s.restSeconds ?? s.workout?.defaultRestSeconds ?? 0;
     const shouldShowNextRest = intervalPhase === 'work' && !!nextExercise;
     const shouldShowNextExercise = !!nextExercise;
 

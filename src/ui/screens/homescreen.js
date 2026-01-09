@@ -115,7 +115,7 @@ export function renderHome(root) {
 
     const workoutMeta = document.createElement('p');
     workoutMeta.className = 'text-xs opacity-70';
-    const totalSeconds = getWorkoutTotalSeconds(workout);
+    const totalSeconds = getWorkoutTotalSeconds(workout, getState().restSeconds);
     workoutMeta.textContent = `${workout.exercises?.length ?? 0} exercises • ${formatDuration(totalSeconds)} (includes rest)`;
 
     cardBody.append(workoutTitle, workoutDesc, workoutMeta);
@@ -147,12 +147,12 @@ export function renderHome(root) {
   return unsubscribe;
 }
 
-function getWorkoutTotalSeconds(workout) {
+function getWorkoutTotalSeconds(workout, restSecondsOverride) {
   const exercises = workout.exercises ?? [];
   const exerciseCount = exercises.length;
 
   const defaultWorkSeconds = workout.defaultWorkSeconds ?? 0;
-  const defaultRestSeconds = workout.defaultRestSeconds ?? 0;
+  const defaultRestSeconds = Number(restSecondsOverride ?? workout.defaultRestSeconds ?? 0);
 
   const workSeconds = exercises.reduce((sum, exercise) => {
     return sum + (exercise.durationSeconds ?? defaultWorkSeconds);

@@ -15,7 +15,8 @@ let state = {
   screen: 'home',
   theme: getDefaultTheme(),
   soundEnabled: true,
-  voice: 'auto',
+  voice: 'female',
+  restSeconds: 10,
   selectedWorkoutId: 'classic',
   workout: null,
   phase: 'idle',        // idle | running | paused | finished
@@ -30,7 +31,11 @@ export function getState() {
 }
 
 export function setState(patch) {
-  state = { ...state, ...patch };
+  const normalizedPatch = { ...patch };
+  if (Object.prototype.hasOwnProperty.call(normalizedPatch, 'restSeconds')) {
+    normalizedPatch.restSeconds = normalizeRestSeconds(normalizedPatch.restSeconds);
+  }
+  state = { ...state, ...normalizedPatch };
   listeners.forEach(fn => fn(state));
 }
 
@@ -45,7 +50,20 @@ export function initState() {
     state = {
       ...state,
       ...saved,
-      theme: saved.theme ?? state.theme
+      theme: saved.theme ?? state.theme,
+      restSeconds: normalizeRestSeconds(saved.restSeconds ?? state.restSeconds)
     };
   }
+}
+
+function normalizeRestSeconds(value) {
+  const min = 5;
+  const max = 30;
+  const step = 5;
+
+  const num = Number(value);
+  if (!Number.isFinite(num)) return 10;
+
+  const snapped = Math.round(num / step) * step;
+  return Math.min(max, Math.max(min, snapped));
 }

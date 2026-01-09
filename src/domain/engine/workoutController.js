@@ -1,5 +1,5 @@
 import { startRunner, pauseRunner, resumeRunner, stopRunner } from './workoutRunner.js';
-import { setState } from '../../app/state.js';
+import { getState, setState } from '../../app/state.js';
 
 export function startWorkout(workout) {
   setState({
@@ -8,7 +8,8 @@ export function startWorkout(workout) {
     screen: 'workout'
   });
 
-  startRunner(workout, onTick, onExerciseChange, onFinish);
+  const { restSeconds } = getState();
+  startRunner(workout, onTick, onExerciseChange, onFinish, { restSeconds });
 }
 
 export function pauseWorkout() {

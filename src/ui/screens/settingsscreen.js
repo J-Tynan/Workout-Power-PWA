@@ -1,5 +1,6 @@
 import { AppShell } from '../layout/appshell.js';
 import { getState, setState, subscribe } from '../../app/state.js';
+import { testVoice } from '../../domain/audio/voice.js';
 
 export function renderSettings(root) {
   // If already mounted (e.g., hot reload), don't mount twice.
@@ -45,19 +46,36 @@ export function renderSettings(root) {
     <option value="dark">Dark</option>
   `;
 
-  const soundRow = document.createElement('label');
-  soundRow.className = 'form-control';
+  const restRow = document.createElement('label');
+  restRow.className = 'form-control w-full';
 
-  const soundLabel = document.createElement('div');
-  soundLabel.className = 'label cursor-pointer';
-  soundLabel.innerHTML = '<span class="label-text">Sound</span>';
+  const restLabel = document.createElement('div');
+  restLabel.className = 'label';
 
-  const soundToggle = document.createElement('input');
-  soundToggle.type = 'checkbox';
-  soundToggle.className = 'toggle toggle-primary';
+  const restLabelText = document.createElement('span');
+  restLabelText.className = 'label-text';
+  restLabelText.textContent = 'Rest period';
 
-  soundLabel.append(soundToggle);
-  soundRow.append(soundLabel);
+  const restValueText = document.createElement('span');
+  restValueText.className = 'label-text-alt opacity-70';
+  restValueText.textContent = '10 seconds';
+
+  restLabel.append(restLabelText, restValueText);
+
+  const restRange = document.createElement('input');
+  restRange.type = 'range';
+  restRange.className = 'range range-primary';
+  restRange.min = '5';
+  restRange.max = '30';
+  restRange.step = '5';
+
+  const restTicks = document.createElement('div');
+  restTicks.className = 'w-full flex justify-between text-xs px-2 opacity-70';
+  for (const s of [5, 10, 15, 20, 25, 30]) {
+    const tick = document.createElement('span');
+    tick.textContent = String(s);
+    restTicks.append(tick);
+  }
 
   const voiceRow = document.createElement('label');
   voiceRow.className = 'form-control w-full';
@@ -69,14 +87,25 @@ export function renderSettings(root) {
   const voiceSelect = document.createElement('select');
   voiceSelect.className = 'select select-bordered w-full';
   voiceSelect.innerHTML = `
-    <option value="auto">Auto</option>
-    <option value="default">Default</option>
+    <option value="off">Off</option>
+    <option value="female">Female</option>
+    <option value="male">Male</option>
   `;
 
-  themeRow.append(themeLabel, themeSelect);
-  voiceRow.append(voiceLabel, voiceSelect);
+  const voiceHint = document.createElement('div');
+  voiceHint.className = 'text-xs opacity-70';
+  voiceHint.style.display = 'none';
 
-  main.append(themeRow, soundRow, voiceRow);
+  const testVoiceButton = document.createElement('button');
+  testVoiceButton.type = 'button';
+  testVoiceButton.className = 'btn btn-outline btn-sm mt-2';
+  testVoiceButton.textContent = 'Test voice';
+
+  themeRow.append(themeLabel, themeSelect);
+  restRow.append(restLabel, restRange, restTicks);
+  voiceRow.append(voiceLabel, voiceSelect, voiceHint, testVoiceButton);
+
+  main.append(themeRow, restRow, voiceRow);
 
   /* ---------- Mount ---------- */
 
@@ -85,10 +114,58 @@ export function renderSettings(root) {
   container.append(AppShell({ header, main }));
   root.append(container);
 
+  const updateVoiceHint = () => {
+    // Only show the hint when user has voice enabled.
+    const selection = voiceSelect.value;
+    if (selection === 'off') {
+      voiceHint.style.display = 'none';
+      testVoiceButton.disabled = true;
+      return;
+    }
+
+    testVoiceButton.disabled = false;
+
+    const hasSpeechApi =
+      'speechSynthesis' in globalThis &&
+      typeof SpeechSynthesisUtterance !== 'undefined';
+    if (!hasSpeechApi) {
+      voiceHint.textContent = 'Text-to-speech is not supported in this browser.';
+      voiceHint.style.display = '';
+      return;
+    }
+
+    let voices = [];
+    try {
+      voices = speechSynthesis.getVoices?.() ?? [];
+    } catch {
+      voices = [];
+    }
+
+    const hasVoices = Array.isArray(voices) && voices.length > 0;
+    voiceHint.textContent = hasVoices
+      ? ''
+      : 'No text-to-speech voices available on this device/browser.';
+    voiceHint.style.display = hasVoices ? 'none' : '';
+  };
+
+  testVoiceButton.addEventListener('click', () => {
+    const selection = voiceSelect.value;
+    if (selection === 'off') return;
+    testVoice(selection);
+  });
+
   const syncFromState = s => {
     themeSelect.value = s.theme ?? 'light';
-    soundToggle.checked = !!s.soundEnabled;
-    voiceSelect.value = s.voice ?? 'auto';
+
+    const restSeconds = Number(s.restSeconds ?? 10);
+    restRange.value = String(restSeconds);
+    restValueText.textContent = formatSeconds(restSeconds);
+
+    const soundEnabled = !!s.soundEnabled;
+    const voice = s.voice ?? 'female';
+
+    voiceSelect.value = soundEnabled ? voice : 'off';
+    updateVoiceHint();
   };
 
   syncFromState(getState());
@@ -97,13 +174,49 @@ export function renderSettings(root) {
     setState({ theme: themeSelect.value });
   });
 
-  soundToggle.addEventListener('change', () => {
-    setState({ soundEnabled: soundToggle.checked });
+  restRange.addEventListener('input', () => {
+    const restSeconds = Number(restRange.value);
+    restValueText.textContent = formatSeconds(restSeconds);
+    setState({ restSeconds });
   });
 
   voiceSelect.addEventListener('change', () => {
-    setState({ voice: voiceSelect.value });
+    const selection = voiceSelect.value;
+    if (selection === 'off') {
+      setState({ soundEnabled: false });
+      updateVoiceHint();
+      return;
+    }
+
+    setState({
+      soundEnabled: true,
+      voice: selection
+    });
+    updateVoiceHint();
   });
 
-  return subscribe(syncFromState);
+  // Voices can load asynchronously; keep the hint up to date.
+  const onVoicesChanged = () => updateVoiceHint();
+  try {
+    speechSynthesis?.addEventListener?.('voiceschanged', onVoicesChanged);
+  } catch {
+    // ignore
+  }
+
+  const unsubscribe = subscribe(syncFromState);
+
+  return () => {
+    try {
+      speechSynthesis?.removeEventListener?.('voiceschanged', onVoicesChanged);
+    } catch {
+      // ignore
+    }
+    unsubscribe?.();
+  };
+}
+
+function formatSeconds(seconds) {
+  const s = Number(seconds);
+  if (!Number.isFinite(s)) return '';
+  return `${s} seconds`;
 }

@@ -3,16 +3,18 @@ let isPaused = false;
 
 let activeWorkout = null;
 let activeHandlers = null;
+let activeRestSeconds = null;
 
 let currentIndex = 0;
 let currentPhase = 'work'; // work | rest
 let remainingSeconds = 0;
 
-export function startRunner(workout, onTick, onExerciseChange, onFinish) {
+export function startRunner(workout, onTick, onExerciseChange, onFinish, options = {}) {
   stopRunner();
 
   activeWorkout = workout;
   activeHandlers = { onTick, onExerciseChange, onFinish };
+  activeRestSeconds = normalizeRestSeconds(options?.restSeconds);
 
   currentIndex = 0;
   currentPhase = 'work';
@@ -51,6 +53,7 @@ export function stopRunner() {
   isPaused = false;
   activeWorkout = null;
   activeHandlers = null;
+  activeRestSeconds = null;
 
   currentIndex = 0;
   currentPhase = 'work';
@@ -74,7 +77,8 @@ function advance() {
   if (currentPhase === 'work') {
     if (!isLastExercise) {
       currentPhase = 'rest';
-      remainingSeconds = Math.max(0, workout.defaultRestSeconds ?? 0);
+      const fallback = Math.max(0, workout.defaultRestSeconds ?? 0);
+      remainingSeconds = activeRestSeconds ?? fallback;
       emitExerciseChange();
       emitTick();
       return;
@@ -123,4 +127,16 @@ function emitExerciseChange() {
     exercise,
     nextExercise
   });
+}
+
+function normalizeRestSeconds(value) {
+  const min = 5;
+  const max = 30;
+  const step = 5;
+
+  const num = Number(value);
+  if (!Number.isFinite(num)) return null;
+
+  const snapped = Math.round(num / step) * step;
+  return Math.min(max, Math.max(min, snapped));
 }

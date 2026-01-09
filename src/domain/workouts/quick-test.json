@@ -8,7 +8,7 @@
     {
       "id": "jumping-jacks",
       "name": "Jumping Jacks",
-      "voiceCueStart": "Jumping jacks. Go!",
+      "voiceCueStart": "Jumping jacks.",
       "voiceCueMid": "Keep those arms and legs moving!",
       "voiceCueCountdown": "Ten seconds left",
       "voiceCueNext": "Rest. Next up: Wall sit",
